@@ -58,13 +58,13 @@ import org.bouncycastle.asn1.BERTags;
 import org.bouncycastle.asn1.DERApplicationSpecific;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 import apdu4j.HexUtils;
 import apdu4j.ISO7816;
+import com.google.common.collect.Lists;
 import pro.javacard.gp.GPData.KeyType;
 import pro.javacard.gp.GPKeySet.Diversification;
 import pro.javacard.gp.GPKeySet.GPKey;
@@ -216,7 +216,8 @@ public class GlobalPlatform {
 		if (sdAID == null ) {
 			command = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, 256);
 		} else {
-			command = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, sdAID.getBytes(), 256);
+		  // TODO: Use of Le gives error on Oberthur cards
+			command = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, sdAID.getBytes());
 		}
 		ResponseAPDU resp = channel.transmit(command);
 
@@ -330,97 +331,96 @@ public class GlobalPlatform {
 		}
 	}
 
-	/**
-	 * Establish a connection to the security domain specified in the
-	 * constructor or discovered. This method is required before doing
-	 * {@link #openSecureChannel openSecureChannel}.
-	 *
-	 * @throws GPException
-	 *             if security domain selection fails for some reason
-	 * @throws CardException
-	 *             on data transmission errors
-	 */
-	@Deprecated
-	public void select() throws GPException, CardException {
-		if (!select(null)) {
-			throw new GPException("Could not select security domain!");
-		}
-	}
+  /**
+   * Establish a connection to the security domain specified in the constructor or discovered. This method is required before doing {@link #openSecureChannel
+   * openSecureChannel}.
+   *
+   * @throws GPException   if security domain selection fails for some reason
+   * @throws CardException on data transmission errors
+   */
+  @Deprecated
+  public void select() throws GPException, CardException {
+    if (!select(null)) {
+      throw new GPException("Could not select security domain!");
+    }
+  }
 
-	private ResponseAPDU always_transmit(CommandAPDU cmd) throws CardException, GPException {
-		if (wrapper != null) {
-			return transmit(cmd);
-		} else {
-			return channel.transmit(cmd);
-		}
-	}
+  private ResponseAPDU always_transmit(CommandAPDU cmd) throws CardException, GPException {
+    if (wrapper != null) {
+      return transmit(cmd);
+    } else {
+      return channel.transmit(cmd);
+    }
+  }
 
-	public List<GPKeySet.GPKey> getKeyInfoTemplate() throws CardException, GPException {
-		// FIXME: this assumes selected ISD. We always request the version with tags (GP CLA)
-		// Key Information Template
-		CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xE0, 256);
-		ResponseAPDU resp = always_transmit(command);
+  public List<GPKeySet.GPKey> getKeyInfoTemplate() throws CardException, GPException {
+    // FIXME: this assumes selected ISD. We always request the version with tags (GP CLA)
+    // Key Information Template
+    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xE0, 256);
+    ResponseAPDU resp = always_transmit(command);
 
-		if (resp.getSW() == ISO7816.SW_NO_ERROR) {
-			return GPData.get_key_template_list(resp.getData());
-		} else {
-			logger.warn("GET DATA(Key Information Template) not supported");
-		}
-		return GPData.get_key_template_list(null);
-	}
+    if (resp.getSW() == ISO7816.SW_NO_ERROR) {
+      logger.warn("Key Information Template " + Hex.toHexString(resp.getData()));
+      return GPData.get_key_template_list(resp.getData());
+    } else {
+      logger.warn("GET DATA(Key Information Template) not supported");
+    }
+    return GPData.get_key_template_list(null);
+  }
 
-	public byte[] fetchCardData() throws CardException, GPException {
-		// Card data
-		CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x66, 256);
-		ResponseAPDU resp = always_transmit(command);
-		if (resp.getSW() == 0x6A86) {
-			logger.debug("GET DATA(CardData) not supported, Open Platform 2.0.1 card? " + GPUtils.swToString(resp.getSW()));
-			return null;
-		} else if (resp.getSW() == 0x9000) {
-			return resp.getData();
-		}
-		return null;
-	}
+  public byte[] fetchCardData() throws CardException, GPException {
+    // Card data
+    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x66, 256);
+    ResponseAPDU resp = always_transmit(command);
+    logger.warn("response {}", String.format("%04X", resp.getSW()));
+    if (resp.getSW() == 0x6A86) {
+      logger.debug("GET DATA(CardData) not supported, Open Platform 2.0.1 card? " + GPUtils.swToString(resp.getSW()));
+      return null;
+    } else if (resp.getSW() == 0x9000) {
+      return resp.getData();
+    }
+    return null;
+  }
 
-	public void dumpCardProperties(PrintStream out) throws CardException, GPException {
+  public void dumpCardProperties(PrintStream out) throws CardException, GPException {
 
-		// Key Information Template
-		List<GPKey> key_templates = getKeyInfoTemplate();
-		if (key_templates != null && key_templates.size() > 0) {
-			GPData.pretty_print_key_template(key_templates, out);
-		}
+    // Key Information Template
+    List<GPKey> key_templates = getKeyInfoTemplate();
+    if (key_templates != null && key_templates.size() > 0) {
+      GPData.pretty_print_key_template(key_templates, out);
+    }
 
-		out.println("***** GET DATA:");
+    out.println("***** GET DATA:");
 
-		// Issuer Identification Number (IIN)
-		CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x42, 256);
-		ResponseAPDU resp = channel.transmit(command);
-		if (resp.getSW() == 0x9000) {
-			out.println("IIN " + HexUtils.bin2hex(resp.getData()));
-		} else {
-			out.println("GET DATA(IIN) not supported");
-		}
+    // Issuer Identification Number (IIN)
+    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x42, 256);
+    ResponseAPDU resp = channel.transmit(command);
+    if (resp.getSW() == 0x9000) {
+      out.println("IIN " + HexUtils.bin2hex(resp.getData()));
+    } else {
+      out.println("GET DATA(IIN) not supported");
+    }
 
-		// Card Image Number (CIN)
-		command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x45, 256);
-		resp = channel.transmit(command);
-		if (resp.getSW() == 0x9000) {
-			out.println("CIN " + HexUtils.bin2hex(resp.getData()));
-		} else {
-			out.println("GET DATA(CIN) not supported");
-		}
+    // Card Image Number (CIN)
+    command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x45, 256);
+    resp = channel.transmit(command);
+    if (resp.getSW() == 0x9000) {
+      out.println("CIN " + HexUtils.bin2hex(resp.getData()));
+    } else {
+      out.println("GET DATA(CIN) not supported");
+    }
 
-		// Sequence Counter of the default Key Version Number (tag 0xC1)
-		command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xC1, 256);
-		resp = channel.transmit(command);
-		if (resp.getSW() == 0x9000) {
-			byte [] ssc = resp.getData();
-			out.println("SSC " + HexUtils.bin2hex(TLVUtils.getTLVValueAsBytes(ssc, SHORT_0)));
-		} else {
-			out.println("GET DATA(SSC) not supported");
-		}
-		out.println("*****");
-	}
+    // Sequence Counter of the default Key Version Number (tag 0xC1)
+    command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xC1, 256);
+    resp = channel.transmit(command);
+    if (resp.getSW() == 0x9000) {
+      byte[] ssc = resp.getData();
+      out.println("SSC " + HexUtils.bin2hex(TLVUtils.getTLVValueAsBytes(ssc, SHORT_0)));
+    } else {
+      out.println("GET DATA(SSC) not supported");
+    }
+    out.println("*****");
+  }
 
 	public byte[] fetchCPLC() throws CardException, GPException {
 		CommandAPDU command = new CommandAPDU(CLA_GP, INS_GET_DATA, 0x9F, 0x7F, 256);
@@ -434,94 +434,95 @@ public class GlobalPlatform {
 		return null;
 	}
 
-	public byte[] getCPLC() throws CardException, GPException {
-		if (cplc == null)
-			cplc = fetchCPLC();
-		return cplc;
-	}
+  public byte[] getCPLC() throws CardException, GPException {
+    if (cplc == null) {
+      cplc = fetchCPLC();
+    }
+    return cplc;
+  }
 
-	public byte [] getDiversificationData() {
-		return diversification_data;
-	}
+  public byte[] getDiversificationData() {
+    return diversification_data;
+  }
 
-	/**
-	 * Establishes a secure channel to the security domain.
-	 *
-	 */
-	public void openSecureChannel(SessionKeyProvider keys, byte[] host_challenge, int scpVersion, EnumSet<APDUMode> securityLevel)
-			throws CardException, GPException {
+  /**
+   * Establishes a secure channel to the security domain.
+   */
+  public void openSecureChannel(SessionKeyProvider keys, byte[] host_challenge, int scpVersion, EnumSet<APDUMode> securityLevel)
+      throws CardException, GPException {
 
-		if (sdAID == null) {
-			throw new IllegalStateException("No selected ISD!");
-		}
+    if (sdAID == null) {
+      throw new IllegalStateException("No selected ISD!");
+    }
 
-		// ENC requires MAC
-		if (securityLevel.contains(APDUMode.ENC)) {
-			securityLevel.add(APDUMode.MAC);
-		}
+    // ENC requires MAC
+    if (securityLevel.contains(APDUMode.ENC)) {
+      securityLevel.add(APDUMode.MAC);
+    }
 
-		// Generate host challenge
-		if (host_challenge == null) {
-			host_challenge = new byte[8];
-			SecureRandom sr = new SecureRandom();
-			sr.nextBytes(host_challenge);
-		}
+    // Generate host challenge
+    if (host_challenge == null) {
+      host_challenge = new byte[8];
+      SecureRandom sr = new SecureRandom();
+      sr.nextBytes(host_challenge);
+    }
 
-		// P1 key version (SCP1)
-		// P2 either key ID (SCP01) or 0 (SCP2)
-		// TODO: use it here for KeyID?
-		CommandAPDU initUpdate = new CommandAPDU(CLA_GP, INS_INITIALIZE_UPDATE, keys.getKeysetVersion(), keys.getKeysetID(), host_challenge, 256);
+    // P1 key version (SCP1)
+    // P2 either key ID (SCP01) or 0 (SCP2)
+    // TODO: use it here for KeyID?
+    //CommandAPDU initUpdate = new CommandAPDU(CLA_GP, INS_INITIALIZE_UPDATE, keys.getKeysetVersion(), keys.getKeysetID(), host_challenge, 256);
+    CommandAPDU initUpdate = new CommandAPDU(CLA_GP, INS_INITIALIZE_UPDATE, keys.getKeysetVersion(), keys.getKeysetID(), host_challenge);
 
-		ResponseAPDU response = channel.transmit(initUpdate);
-		int sw = response.getSW();
+    ResponseAPDU response = channel.transmit(initUpdate);
+    int sw = response.getSW();
 
-		// Detect and report locked cards in a more sensible way.
-		if ((sw == ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED) || (sw == ISO7816.SW_AUTHENTICATION_METHOD_BLOCKED)) {
-			throw new GPException(sw, "INITIALIZE UPDATE failed, card LOCKED?");
-		}
+    // Detect and report locked cards in a more sensible way.
+    if ((sw == ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED) || (sw == ISO7816.SW_AUTHENTICATION_METHOD_BLOCKED)) {
+      throw new GPException(sw, "INITIALIZE UPDATE failed, card LOCKED?");
+    }
 
-		// Detect all other errors
-		GPException.check(response, "INITIALIZE UPDATE failed");
-		byte[] update_response = response.getData();
+    // Detect all other errors
+    GPException.check(response, "INITIALIZE UPDATE failed");
+    byte[] update_response = response.getData();
 
-		// Verify response length (SCP01/SCP02 + SCP03 + SCP03 w/ pseudorandom)
-		if (update_response.length != 28 && update_response.length != 29 && update_response.length != 32) {
-			throw new GPException("Invalid INITIALIZE UPDATE response length: " + update_response.length);
-		}
-		// Parse the response
-		int offset = 0;
-		diversification_data = Arrays.copyOfRange(update_response, 0, 10);
-		offset += diversification_data.length;
-		// Get used key version from response
-		int keyVersion = update_response[offset] & 0xFF;
-		offset++;
-		// Get major SCP version from Key Information field in response
-		scpMajorVersion = update_response[offset];
-		offset++;
+    // Verify response length (SCP01/SCP02 + SCP03 + SCP03 w/ pseudorandom)
+    if (update_response.length != 28 && update_response.length != 29 && update_response.length != 32) {
+      throw new GPException("Invalid INITIALIZE UPDATE response length: " + update_response.length);
+    }
+    // Parse the response
+    int offset = 0;
+    diversification_data = Arrays.copyOfRange(update_response, 0, 10);
+    offset += diversification_data.length;
+    // Get used key version from response
+    int keyVersion = update_response[offset] & 0xFF;
+    offset++;
+    // Get major SCP version from Key Information field in response
+    scpMajorVersion = update_response[offset];
+    offset++;
 
-		// get the protocol "i" parameter, if SCP03
-		int scp_i = -1;
-		if (scpMajorVersion == 3) {
-			scp_i = update_response[offset];
-			offset++;
-		}
+    // get the protocol "i" parameter, if SCP03
+    int scp_i = -1;
+    if (scpMajorVersion == 3) {
+      scp_i = update_response[offset];
+      offset++;
+    }
 
-		// FIXME: SCP02 has 2 byte sequence + 6 bytes card challenge but the challenge is discarded.
-		// get card challenge
-		byte card_challenge[] = Arrays.copyOfRange(update_response, offset, offset + 8);
-		offset += card_challenge.length;
-		// get card cryptogram
-		byte card_cryptogram[] = Arrays.copyOfRange(update_response, offset, offset + 8);
-		offset += card_cryptogram.length;
+    // FIXME: SCP02 has 2 byte sequence + 6 bytes card challenge but the challenge is discarded.
+    // get card challenge
+    byte card_challenge[] = Arrays.copyOfRange(update_response, offset, offset + 8);
+    offset += card_challenge.length;
+    // get card cryptogram
+    byte card_cryptogram[] = Arrays.copyOfRange(update_response, offset, offset + 8);
+    offset += card_cryptogram.length;
 
-		logger.debug("Host challenge: " + HexUtils.bin2hex(host_challenge));
-		logger.debug("Card challenge: " + HexUtils.bin2hex(card_challenge));
+    logger.debug("Host challenge: " + HexUtils.bin2hex(host_challenge));
+    logger.debug("Card challenge: " + HexUtils.bin2hex(card_challenge));
 
-		// Verify response
-		// If using explicit key version, it must match.
-		if ((keys.getKeysetVersion() > 0) && (keyVersion != keys.getKeysetVersion())) {
-			throw new GPException("Key version mismatch: " + keys.getKeysetVersion() + " != " + keyVersion);
-		}
+    // Verify response
+    // If using explicit key version, it must match.
+    if ((keys.getKeysetVersion() > 0) && (keyVersion != keys.getKeysetVersion())) {
+      throw new GPException("Key version mismatch: " + keys.getKeysetVersion() + " != " + keyVersion);
+    }
 
 		logger.debug("Card reports SCP0" + scpMajorVersion + " with version " + keyVersion + " keys");
 
@@ -670,35 +671,22 @@ public class GlobalPlatform {
 		dirty = true;
 	}
 
-	/**
-	 * Install an applet and make it selectable. The package and applet AID must
-	 * be present (ie. non-null). If one of the other parameters is null
-	 * sensible defaults are chosen. If installation parameters are used, they
-	 * must be passed in a special format, see parameter description below.
-	 * <P>
-	 * Before installation the package containing the applet must be loaded onto
-	 * the card, see {@link #loadCapFile loadCapFile}.
-	 * <P>
-	 * This method installs just one applet. Call it several times for packages
-	 * containing several applets.
-	 *
-	 * @param packageAID
-	 *            the package that containing the applet
-	 * @param appletAID
-	 *            the applet to be installed
-	 * @param instanceAID
-	 *            the applet AID passed to the install method of the applet,
-	 *            defaults to {@code packageAID} if null
-	 * @param privileges
-	 *            privileges encoded as byte
-	 * @param installParams
-	 *            tagged installation parameters, defaults to {@code 0xC9 00}
-	 *            (ie. no installation parameters) if null, if non-null the
-	 *            format is {@code 0xC9 len data...}
-	 */
-	@Deprecated
-	public void installAndMakeSelectable(AID packageAID, AID appletAID, AID instanceAID, byte privileges, byte[] installParams,
-			byte[] installToken) throws GPException, CardException {
+  /**
+   * Install an applet and make it selectable. The package and applet AID must be present (ie. non-null). If one of the other parameters is null sensible
+   * defaults are chosen. If installation parameters are used, they must be passed in a special format, see parameter description below. <P> Before installation
+   * the package containing the applet must be loaded onto the card, see {@link #loadCapFile loadCapFile}. <P> This method installs just one applet. Call it
+   * several times for packages containing several applets.
+   *
+   * @param packageAID    the package that containing the applet
+   * @param appletAID     the applet to be installed
+   * @param instanceAID   the applet AID passed to the install method of the applet, defaults to {@code packageAID} if null
+   * @param privileges    privileges encoded as byte
+   * @param installParams tagged installation parameters, defaults to {@code 0xC9 00} (ie. no installation parameters) if null, if non-null the format is {@code
+   *                      0xC9 len data...}
+   */
+  @Deprecated
+  public void installAndMakeSelectable(AID packageAID, AID appletAID, AID instanceAID, byte privileges, byte[] installParams,
+                                       byte[] installToken) throws GPException, CardException {
 
 		installAndMakeSelectable(packageAID, appletAID, instanceAID, Privileges.fromByte(privileges), installParams, installToken);
 	}
@@ -852,54 +840,70 @@ public class GlobalPlatform {
 		dirty = true;
 	}
 
-	// FIXME: remove the withCheck parameter, as always true?
-	private byte[] encodeKey(GPKey key, GPKey kek, boolean withCheck) {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			if (key.getType()== Type.DES3) {
-				baos.write(0x80); // 3DES
-				// Length
-				baos.write(16);
-				// Encrypt key with KEK
-				Cipher cipher;
-				cipher = Cipher.getInstance("DESede/ECB/NoPadding");
-				cipher.init(Cipher.ENCRYPT_MODE, kek.getKey());
-				baos.write(cipher.doFinal(key.getValue(), 0, 16));
-				if (withCheck) {
-					byte[] kcv = GPCrypto.kcv_3des(key);
-					baos.write(kcv.length);
-					baos.write(kcv);
-				} else {
-					baos.write(0);
-				}
-			} else if (key.getType() == Type.AES) {
-				//	baos.write(0xFF);
-				baos.write(0x88); // AES
-				baos.write(0x11); // 128b keys only currently
-				byte [] cgram = GPCrypto.scp03_encrypt_key(kek, key);
-				baos.write(cgram.length);
-				baos.write(cgram);
-				byte [] check = GPCrypto.scp03_key_check_value(key);
-				baos.write(check.length);
-				baos.write(check);
-			} else {
-				throw new RuntimeException("Don't know how to handle " + key.getType());
-			}
-			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InvalidKeyException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalBlockSizeException e) {
-			throw new RuntimeException(e);
-		} catch (BadPaddingException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchPaddingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+  // FIXME: remove the withCheck parameter, as always true?
+  private byte[] encodeKey(GPKey key, GPKey kek, boolean withCheck) {
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      if (key.getType() == Type.DES) {
+        baos.write(0x80); // DES
+        // Length
+        baos.write(16);
+        // Encrypt key with KEK
+        Cipher cipher;
+        cipher = Cipher.getInstance("DES/ECB/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, kek.getKey());
+        baos.write(cipher.doFinal(key.getValue(), 0, 16));
+        if (withCheck) {
+          byte[] kcv = GPCrypto.kcv_3des(key);
+          baos.write(kcv.length);
+          baos.write(kcv);
+        } else {
+          baos.write(0);
+        }
+      } else if (key.getType() == Type.DES3) {
+          baos.write(0x82); // 3DES
+          // Length
+          baos.write(16);
+          // Encrypt key with KEK
+          Cipher cipher;
+          cipher = Cipher.getInstance("DESede/ECB/NoPadding");
+          cipher.init(Cipher.ENCRYPT_MODE, kek.getKey());
+          baos.write(cipher.doFinal(key.getValue(), 0, 16));
+          if (withCheck) {
+            byte[] kcv = GPCrypto.kcv_3des(key);
+            baos.write(kcv.length);
+            baos.write(kcv);
+          } else {
+            baos.write(0);
+          }
+      } else if (key.getType() == Type.AES) {
+        //	baos.write(0xFF);
+        baos.write(0x88); // AES
+        baos.write(0x11); // 128b keys only currently
+        byte[] cgram = GPCrypto.scp03_encrypt_key(kek, key);
+        baos.write(cgram.length);
+        baos.write(cgram);
+        byte[] check = GPCrypto.scp03_key_check_value(key);
+        baos.write(check.length);
+        baos.write(check);
+      } else {
+        throw new RuntimeException("Don't know how to handle " + key.getType());
+      }
+      return baos.toByteArray();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } catch (InvalidKeyException e) {
+      throw new RuntimeException(e);
+    } catch (IllegalBlockSizeException e) {
+      throw new RuntimeException(e);
+    } catch (BadPaddingException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchPaddingException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
 
 	public void putKeys(List<GPKeySet.GPKey> keys, boolean replace) throws GPException, CardException {
@@ -941,10 +945,15 @@ public class GlobalPlatform {
 				throw new IllegalArgumentException("Not adding keys and version matches existing?");
 			}
 
-			if (replace && (keys.get(0).getVersion() != tmpl.get(0).getVersion())) {
-				throw new IllegalArgumentException("Replacing keys and versions don't match existing?");
-			}
-		} else {
+      if (replace) {
+        for (GPKey key : keys) {
+          if (findKeyInTemplate(key, tmpl)) {
+            continue;
+          }
+          throw new IllegalArgumentException("Replacing keys and versions don't match existing?");
+        }
+      }
+    } else {
 			if (replace) {
 				logger.debug("No key template on card but trying to replace. Implying add");
 				replace = false;
@@ -975,8 +984,17 @@ public class GlobalPlatform {
 		CommandAPDU command = new CommandAPDU(CLA_GP, INS_PUT_KEY, P1, P2, bo.toByteArray());
 		ResponseAPDU response = transmit(command);
 		GPException.check(response,"PUT KEY failed");
+    GPData.pretty_print_putkey_response(response.getData(), System.out);
 	}
 
+  private boolean findKeyInTemplate(final GPKey key, List<GPKey> template) {
+    for (GPKey templateKey : template) {
+      if (key.getVersion() == templateKey.getVersion() && key.getLength() == templateKey.getLength() && key.getType() == templateKey.getType()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 	public GPRegistry getRegistry() throws GPException, CardException{
 		if (dirty) {

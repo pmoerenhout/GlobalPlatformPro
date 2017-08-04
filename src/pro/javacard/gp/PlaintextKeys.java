@@ -256,7 +256,6 @@ public class PlaintextKeys implements SessionKeyProvider {
 		}
 	}
 
-
 	private GPKeySet deriveSessionKeysSCP03(GPKeySet staticKeys, byte[] host_challenge, byte[] card_challenge) {
 		GPKeySet sessionKeys = new GPKeySet();
 		final byte mac_constant = 0x06;

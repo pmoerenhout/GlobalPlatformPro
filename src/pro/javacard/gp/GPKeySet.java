@@ -85,15 +85,14 @@ public class GPKeySet {
 			this.length = length;
 			// FIXME: these values should be encapsulated somewhere
 			// FIXME: 0x81 is actually reserved according to GP
-			if (type == 0x80 || type == 0x81) {
+			if (type == 0x80 || type == 0x81 || type == 0x82 || type == 0x85) {
 				this.type = Type.DES3;
 			} else if (type == 0x88) {
 				this.type = Type.AES;
 			} else {
-				throw new IllegalArgumentException(getClass().getName() + " currently only supports 3DES and AES keys");
+				throw new IllegalArgumentException(getClass().getName() + " " + type + " " + " currently only supports 3DES and AES keys");
 			}
 		}
-
 
 		// Create a key of given type and given bytes
 		public GPKey(byte [] v, Type type) {

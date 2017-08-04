@@ -32,8 +32,9 @@ public final class TLVUtils {
 	}
 
 	static int expectTag(byte[] data, int offset, byte tag) {
-		if (data[offset] == tag)
+		if (data[offset] == tag) {
 			++offset;
+		}
 		return offset;
 	}
 
