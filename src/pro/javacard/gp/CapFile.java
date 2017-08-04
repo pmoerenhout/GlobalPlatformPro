@@ -188,26 +188,31 @@ public class CapFile {
 		return result;
 	}
 
-	private byte[] createHeader(boolean includeDebug) {
+	private byte[] createHeader(boolean includeDebug) throws IOException {
 		int len = getCodeLength(includeDebug);
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
 		// TODO: DAP blocks.
 		bo.write((byte) 0xC4);
-		// FIXME: usual length encoding.
-		if (len < 0x80) {
-			bo.write((byte) len);
-		} else if (len <= 0xFF) {
-			bo.write((byte) 0x81);
-			bo.write((byte) len);
-		} else if (len <= 0xFFFF) {
-			bo.write((byte) 0x82);
-			bo.write((byte) ((len & 0xFF00) >> 8));
-			bo.write((byte) (len & 0xFF));
+		bo.write(getLengthBerEncoded(len));
+		return bo.toByteArray();
+	}
+
+	private byte[] getLengthBerEncoded(int length)  {
+		final ByteArrayOutputStream bo = new ByteArrayOutputStream();
+		if (length > 127) {
+			int size = 1;
+			int val = length;
+			while ((val >>>= 8) != 0) {
+				size++;
+			}
+
+			bo.write((byte) (size | 0x80));
+
+			for (int i = (size - 1) * 8; i >= 0; i -= 8) {
+				bo.write((byte) (length >> i));
+			}
 		} else {
-			bo.write((byte) 0x83);
-			bo.write((byte) ((len & 0xFF0000) >> 16));
-			bo.write((byte) ((len & 0xFF00) >> 8));
-			bo.write((byte) (len & 0xFF));
+			bo.write((byte) length);
 		}
 		return bo.toByteArray();
 	}
