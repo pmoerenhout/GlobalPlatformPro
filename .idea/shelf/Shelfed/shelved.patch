@@ -1,0 +1,645 @@
+Index: .classpath
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<classpath>\n\t<classpathentry kind=\"src\" path=\"src\"/>\n\t<classpathentry kind=\"lib\" path=\"lib/bcprov-jdk15on-155.jar\"/>\n\t<classpathentry kind=\"lib\" path=\"lib/jopt-simple-4.9.jar\"/>\n\t<classpathentry kind=\"lib\" path=\"lib/slf4j-api-1.7.21.jar\"/>\n\t<classpathentry kind=\"lib\" path=\"lib/apdu4j-pcsc.jar\"/>\n\t<classpathentry kind=\"lib\" path=\"lib/guava-19.0.jar\"/>\n\t<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>\n\t<classpathentry kind=\"con\" path=\"org.eclipse.jdt.junit.JUNIT_CONTAINER/4\"/>\n\t<classpathentry kind=\"output\" path=\"bin\"/>\n</classpath>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .classpath	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ .classpath	(revision )
+@@ -1,11 +1,17 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+ 	<classpathentry kind="src" path="src"/>
++<<<<<<< HEAD
+ 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-155.jar"/>
+ 	<classpathentry kind="lib" path="lib/jopt-simple-4.9.jar"/>
+ 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
++=======
++	<classpathentry kind="lib" path="lib/bcprov-jdk15on-157.jar"/>
++	<classpathentry kind="lib" path="lib/jopt-simple-5.0.4.jar"/>
++	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
++>>>>>>> martinpaljak/master
+ 	<classpathentry kind="lib" path="lib/apdu4j-pcsc.jar"/>
+-	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
++	<classpathentry kind="lib" path="lib/guava-22.0.jar"/>
+ 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+ 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+ 	<classpathentry kind="output" path="bin"/>
+Index: CONTRIBUTING.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Contributing to GlobalPlatformPro\n * Use the software!\n * Send card information\n * Send debug logs (with ```--debug``` and ```--verbose```)\n * All patches must be with MIT license.\n\n## Building the software\nSimple `ant` will produce working results if you have the dependencies.\n\nOn OSX, if you have Eclipse installed, use this to get \"ant\" on command line:\n `alias ant=\"java -jar $(find $(mdfind kMDItemCFBundleIdentifier = org.eclipse.platform.ide) -name ant-launcher.jar)\"`\n\n### Debian/Ubuntu\n * Install dependencies: `apt-get install --no-install-recommends libccid openjdk-7-jdk git ant`\n\n### Fedora/CentOS\n * Install dependencies: `yum install pcsc-lite-ccid java-1.8.0-openjdk git ant`\n * Start pcscd service: `service pcscd start`\n\n### FreeBSD\n * Install dependencies: `pkg install devel/libccid java/openjdk7 devel/apache-ant devel/git`\n\n## Note about Oracle JDK\n * Compiled against Java 1.7+ but only tested with latest Java 1.8\n  * 1.7 is at EOL: http://www.oracle.com/us/technologies/java/eol-135779.html   \n * Requires \"Unlimited Strength Jurisdiction Policy Files\"\n  * Download for Java 1.7: http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html\n  * Download for Java 1.8: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html\n\n## Building Windows executable\n * Download [launch4j](http://launch4j.sourceforge.net/) and extract a version matching your host platform into `ext/launch4j`\n * Run `ant windist`\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- CONTRIBUTING.md	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ CONTRIBUTING.md	(revision )
+@@ -1,7 +1,7 @@
+ # Contributing to GlobalPlatformPro
+  * Use the software!
+  * Send card information
+- * Send debug logs (with ```--debug``` and ```--verbose```)
++ * Send debug logs (with `--debug` and `--verbose`)
+  * All patches must be with MIT license.
+ 
+ ## Building the software
+@@ -21,11 +21,8 @@
+  * Install dependencies: `pkg install devel/libccid java/openjdk7 devel/apache-ant devel/git`
+ 
+ ## Note about Oracle JDK
+- * Compiled against Java 1.7+ but only tested with latest Java 1.8
+-  * 1.7 is at EOL: http://www.oracle.com/us/technologies/java/eol-135779.html   
+  * Requires "Unlimited Strength Jurisdiction Policy Files"
+-  * Download for Java 1.7: http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
+-  * Download for Java 1.8: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
++ * Download for Java 1.8: http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+ 
+ ## Building Windows executable
+  * Download [launch4j](http://launch4j.sourceforge.net/) and extract a version matching your host platform into `ext/launch4j`
+Index: build.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\"?>\n<project name=\"GlobalPlatform\" default=\"dist\" basedir=\".\">\n  <description>ANT build file for GlobalPlatformPro (javacard.pro)</description>\n  <!-- Build dependencies -->\n  <target name=\"fetch\">\n    <mkdir dir=\"lib\"/>\n    <!-- Remember to update globalplatform.pro and .classpath as well! -->\n    <get src=\"https://repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"http://repo2.maven.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"http://repo2.maven.org/maven2/org/slf4j/slf4j-simple/1.7.21/slf4j-simple-1.7.21.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"http://central.maven.org/maven2/net/sf/proguard/proguard-base/5.2.1/proguard-base-5.2.1.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"https://downloads.bouncycastle.org/java/bcprov-jdk15on-155.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"https://github.com/martinpaljak/apdu4j/releases/download/v0.0.34/apdu4j-pcsc.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <get src=\"https://repo1.maven.org/maven2/com/google/guava/guava/19.0/guava-19.0.jar\" dest=\"lib\" verbose=\"true\" skipexisting=\"true\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/jopt-simple-4.9.jar\" property=\"26c5856e954b5f864db76f13b86919b59c6eecf9fd930b96baa8884626baf2f5\" verifyProperty=\"joptOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/slf4j-api-1.7.21.jar\" property=\"1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df\" verifyProperty=\"slfjapiOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/slf4j-simple-1.7.21.jar\" property=\"a20179cc3ded2d7e2f5def4ccb34b2d0836e2f8c9e79352a6babd6a6559cc8e0\" verifyProperty=\"slfjsimpleOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/proguard-base-5.2.1.jar\" property=\"f163bdd73c58cbc9b789ab14f5d602b4994dbd82eacb5d54b3bd2a95de63f3bf\" verifyProperty=\"proguardOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/bcprov-jdk15on-155.jar\" property=\"c08450a176b55c7ef4847111550eb247e5912ad450c8c225fa2f7cab74ce608b\" verifyProperty=\"bouncyOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/apdu4j-pcsc.jar\" property=\"c83739847a7b1e323e4d0cad94fe50858ecc9435a59ee429d55ec02934d52a30\" verifyProperty=\"apduOK\"/>\n    <checksum algorithm=\"SHA-256\" file=\"lib/guava-19.0.jar\" property=\"58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4\" verifyProperty=\"guavaOK\"/>\n    <fail message=\"Checksum failure\">\n      <condition>\n        <or>\n          <isfalse value=\"${joptOK}\"/>\n          <isfalse value=\"${slfjapiOK}\"/>\n          <isfalse value=\"${slfjsimpleOK}\"/>\n          <isfalse value=\"${proguardOK}\"/>\n          <isfalse value=\"${bouncyOK}\"/>\n          <isfalse value=\"${apduOK}\"/>\n          <isfalse value=\"${guavaOK}\"/>\n        </or>\n      </condition>\n    </fail>\n  </target>\n  <!-- Build the software -->\n  <path id=\"build.classpath\">\n    <pathelement location=\"lib/jopt-simple-4.9.jar\"/>\n    <pathelement location=\"lib/apdu4j-pcsc.jar\"/>\n    <pathelement location=\"lib/bcprov-jdk15on-155.jar\"/>\n    <pathelement location=\"lib/slf4j-api-1.7.21.jar\"/>\n    <pathelement location=\"lib/guava-19.0.jar\"/>\n  </path>\n  <target name=\"make\" depends=\"fetch,compile\"/>\n  <target name=\"compile\" description=\"compile the source\">\n    <mkdir dir=\"build\"/>\n    <javac srcdir=\"src\" destdir=\"build\" includeantruntime=\"false\" excludes=\"**/tests/**\" debug=\"true\" debuglevel=\"lines,vars,source\">\n      <compilerarg value=\"-Xlint\"/>\n      <classpath refid=\"build.classpath\"/>\n    </javac>\n  </target>\n  <!-- Package it into a nice little JAR -->\n  <target name=\"dist\" depends=\"make\" description=\"generate the distribution\">\n    <exec command=\"git describe --always --tags --long\" output=\"build/pro/javacard/gp/version.txt\"/>\n    <java classname=\"proguard.ProGuard\" fork=\"true\" failonerror=\"true\">\n      <arg line=\"@globalplatform.pro\"/>\n      <classpath>\n        <pathelement location=\"lib/proguard-base-5.2.1.jar\"/>\n      </classpath>\n    </java>\n    <jar destfile=\"openkms-gp.jar\" level=\"9\" basedir=\"build\"/>\n    <jar destfile=\"gp.jar\" level=\"9\">\n      <zipfileset src=\"lib/apdu4j-pcsc.jar\" />\n      <zipfileset src=\"optimized-globalplatform.jar\" excludes=\"org/bouncycastle/x509/\"/>\n      <zipfileset src=\"lib/slf4j-simple-1.7.21.jar\" excludes=\"META-INF/maven/\"/>\n      <manifest><attribute name=\"Main-Class\" value=\"pro.javacard.gp.GPTool\"/></manifest>\n    </jar>\n    <delete file=\"optimized-globalplatform.jar\"/>\n  </target>\n  <!-- Wrap the JAR into .EXE for Windows users -->\n  <target name=\"windist\" depends=\"dist\" description=\"package as .exe\">\n    <property name=\"launch4j.dir\" location=\"ext/launch4j\"/>\n    <taskdef name=\"launch4j\" classname=\"net.sf.launch4j.ant.Launch4jTask\" classpath=\"${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar\"/>\n    <launch4j>\n      <config headerType=\"console\" outfile=\"gp.exe\" jar=\"gp.jar\" errTitle=\"GlobalPlatformPro\">\n        <jre minVersion=\"1.7.0\"/>\n      </config>\n    </launch4j>\n  </target>\n  <!-- Clean the source tree -->\n  <target name=\"clean\" description=\"clean up\">\n    <delete dir=\"build\"/>\n    <delete dir=\"javadoc\"/>\n    <delete file=\"gp.jar\"/>\n  </target>\n  <!-- Put javadocs online -->\n  <target name=\"javadoc\">\n    <javadoc destdir=\"javadoc\" Doctitle=\"GlobalPlatformPro Java\" access=\"public\" linksource=\"true\">\n      <packageset dir=\"src\">\n        <include name=\"pro/javacard/gp/\"/>\n        <exclude name=\"pro/javacard/gp/tests/**\"/>\n      </packageset>\n      <classpath refid=\"build.classpath\"/>\n    </javadoc>\n  </target>\n  <!-- Do a full release to github -->\n  <target name=\"release\" depends=\"clean,dist,javadoc\">\n    <exec failonerror=\"true\" command=\"test -n &quot;$(git status -s)&quot;\"/>\n    <input message=\"Publish version:\" addproperty=\"release.version\"/>\n    <input message=\"Do you want to release ${release.version}?\" validargs=\"y,n\" addproperty=\"do.release\"/>\n    <condition property=\"do.abort\">\n      <equals arg1=\"n\" arg2=\"${do.release}\"/>\n    </condition>\n    <fail if=\"do.abort\">Not releasing ${release.version}.</fail>\n    <echo message=\"Releasing ${release.version} to Github\"/>\n    <exec failonerror=\"true\" command=\"git tag -s ${release.version} -m 'Release ${release.version}'\"/>\n    <exec failonerror=\"true\" command=\"git push --tags origin master\"/>\n    <exec failonerror=\"true\" command=\"ghp-import -n -m 'Release ${release.version}' -p javadoc\"/>\n  </target>\n</project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.xml	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ build.xml	(revision )
+@@ -5,6 +5,7 @@
+   <target name="fetch">
+     <mkdir dir="lib"/>
+     <!-- Remember to update globalplatform.pro and .classpath as well! -->
++<<<<<<< HEAD
+     <get src="https://repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/4.9/jopt-simple-4.9.jar" dest="lib" verbose="true" skipexisting="true"/>
+     <get src="http://repo2.maven.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar" dest="lib" verbose="true" skipexisting="true"/>
+     <get src="http://repo2.maven.org/maven2/org/slf4j/slf4j-simple/1.7.21/slf4j-simple-1.7.21.jar" dest="lib" verbose="true" skipexisting="true"/>
+@@ -17,8 +18,22 @@
+     <checksum algorithm="SHA-256" file="lib/slf4j-simple-1.7.21.jar" property="a20179cc3ded2d7e2f5def4ccb34b2d0836e2f8c9e79352a6babd6a6559cc8e0" verifyProperty="slfjsimpleOK"/>
+     <checksum algorithm="SHA-256" file="lib/proguard-base-5.2.1.jar" property="f163bdd73c58cbc9b789ab14f5d602b4994dbd82eacb5d54b3bd2a95de63f3bf" verifyProperty="proguardOK"/>
+     <checksum algorithm="SHA-256" file="lib/bcprov-jdk15on-155.jar" property="c08450a176b55c7ef4847111550eb247e5912ad450c8c225fa2f7cab74ce608b" verifyProperty="bouncyOK"/>
++=======
++    <get src="https://repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="http://repo2.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="http://repo2.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="http://central.maven.org/maven2/net/sf/proguard/proguard-base/5.3.3/proguard-base-5.3.3.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="https://downloads.bouncycastle.org/java/bcprov-jdk15on-157.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="https://github.com/martinpaljak/apdu4j/releases/download/v0.0.34/apdu4j-pcsc.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <get src="https://repo1.maven.org/maven2/com/google/guava/guava/22.0/guava-22.0.jar" dest="lib" verbose="true" skipexisting="true"/>
++    <checksum algorithm="SHA-256" file="lib/jopt-simple-5.0.4.jar" property="df26cc58f235f477db07f753ba5a3ab243ebe5789d9f89ecf68dd62ea9a66c28" verifyProperty="joptOK"/>
++    <checksum algorithm="SHA-256" file="lib/slf4j-api-1.7.25.jar" property="18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79" verifyProperty="slfjapiOK"/>
++    <checksum algorithm="SHA-256" file="lib/slf4j-simple-1.7.25.jar" property="0966e86fffa5be52d3d9e7b89dd674d98a03eed0a454fbaf7c1bd9493bd9d874" verifyProperty="slfjsimpleOK"/>
++    <checksum algorithm="SHA-256" file="lib/proguard-base-5.3.3.jar" property="1d2e883717b8ab7d3fcc9fa01034d165809a9c94daa6303a838f11e4d36adc86" verifyProperty="proguardOK"/>
++    <checksum algorithm="SHA-256" file="lib/bcprov-jdk15on-157.jar" property="4c7fb5f7fb043fedc4b7e7af88871050f61af8dea7aaade87f8ebd60e509cd89" verifyProperty="bouncyOK"/>
++>>>>>>> martinpaljak/master
+     <checksum algorithm="SHA-256" file="lib/apdu4j-pcsc.jar" property="c83739847a7b1e323e4d0cad94fe50858ecc9435a59ee429d55ec02934d52a30" verifyProperty="apduOK"/>
+-    <checksum algorithm="SHA-256" file="lib/guava-19.0.jar" property="58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4" verifyProperty="guavaOK"/>
++    <checksum algorithm="SHA-256" file="lib/guava-22.0.jar" property="1158e94c7de4da480873f0b4ab4a1da14c0d23d4b1902cc94a58a6f0f9ab579e" verifyProperty="guavaOK"/>
+     <fail message="Checksum failure">
+       <condition>
+         <or>
+@@ -35,11 +50,17 @@
+   </target>
+   <!-- Build the software -->
+   <path id="build.classpath">
+-    <pathelement location="lib/jopt-simple-4.9.jar"/>
++    <pathelement location="lib/jopt-simple-5.0.4.jar"/>
+     <pathelement location="lib/apdu4j-pcsc.jar"/>
++<<<<<<< HEAD
+     <pathelement location="lib/bcprov-jdk15on-155.jar"/>
+     <pathelement location="lib/slf4j-api-1.7.21.jar"/>
+     <pathelement location="lib/guava-19.0.jar"/>
++=======
++    <pathelement location="lib/bcprov-jdk15on-157.jar"/>
++    <pathelement location="lib/slf4j-api-1.7.25.jar"/>
++    <pathelement location="lib/guava-22.0.jar"/>
++>>>>>>> martinpaljak/master
+   </path>
+   <target name="make" depends="fetch,compile"/>
+   <target name="compile" description="compile the source">
+@@ -55,14 +76,18 @@
+     <java classname="proguard.ProGuard" fork="true" failonerror="true">
+       <arg line="@globalplatform.pro"/>
+       <classpath>
+-        <pathelement location="lib/proguard-base-5.2.1.jar"/>
++        <pathelement location="lib/proguard-base-5.3.3.jar"/>
+       </classpath>
+     </java>
+     <jar destfile="openkms-gp.jar" level="9" basedir="build"/>
+     <jar destfile="gp.jar" level="9">
+       <zipfileset src="lib/apdu4j-pcsc.jar" />
+       <zipfileset src="optimized-globalplatform.jar" excludes="org/bouncycastle/x509/"/>
++<<<<<<< HEAD
+       <zipfileset src="lib/slf4j-simple-1.7.21.jar" excludes="META-INF/maven/"/>
++=======
++      <zipfileset src="lib/slf4j-simple-1.7.25.jar" excludes="META-INF/maven/"/>
++>>>>>>> martinpaljak/master
+       <manifest><attribute name="Main-Class" value="pro.javacard.gp.GPTool"/></manifest>
+     </jar>
+     <delete file="optimized-globalplatform.jar"/>
+@@ -73,7 +98,7 @@
+     <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar"/>
+     <launch4j>
+       <config headerType="console" outfile="gp.exe" jar="gp.jar" errTitle="GlobalPlatformPro">
+-        <jre minVersion="1.7.0"/>
++        <jre minVersion="1.8.0"/>
+       </config>
+     </launch4j>
+   </target>
+Index: src/pro/javacard/gp/GPRegistryEntry.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * GlobalPlatformPro - GlobalPlatform tool\n *\n * Copyright (C) 2015-2016 Martin Paljak, martin@martinpaljak.net\n *\n * This library is free software; you can redistribute it and/or\n * modify it under the terms of the GNU Lesser General Public\n * License as published by the Free Software Foundation; either\n * version 3.0 of the License, or (at your option) any later version.\n *\n * This library is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n * Lesser General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public\n * License along with this library; if not, write to the Free Software\n * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA\n */\npackage pro.javacard.gp;\n\nimport java.util.EnumSet;\n\nimport com.google.common.base.Joiner;\n\npublic class GPRegistryEntry {\n\n\tprotected AID aid;\n\tprotected int lifecycle;\n\tprotected Kind kind;\n\tprotected AID domain;\n\n\tpublic static enum Kind {\n\t\tIssuerSecurityDomain, Application, SecurityDomain, ExecutableLoadFile;\n\n\n\t\tpublic String toShortString() {\n\t\t\tswitch (this) {\n\t\t\t\tcase IssuerSecurityDomain:\n\t\t\t\t\treturn \"ISD\";\n\t\t\t\tcase Application:\n\t\t\t\t\treturn \"APP\";\n\t\t\t\tcase SecurityDomain:\n\t\t\t\t\treturn \"DOM\";\n\t\t\t\tcase ExecutableLoadFile:\n\t\t\t\t\treturn \"PKG\";\n\t\t\t\tdefault:\n\t\t\t\t\tthrow new IllegalStateException(\"Unknown entry type\");\n\t\t\t}\n\t\t}\n\t}\n\n\tpublic AID getAID() {\n\t\treturn aid;\n\t}\n\tvoid setAID(AID aid) {\n\t\tthis.aid = aid;\n\t}\n\n\n\tvoid setDomain(AID dom) {\n\t\tthis.domain = dom;\n\t}\n\n\tpublic AID getDomain() {\n\t\treturn domain;\n\t}\n\tvoid setLifeCycle(int lifecycle) {\n\t\tthis.lifecycle = lifecycle;\n\t}\n\n\tvoid setType(Kind type) {\n\t\tthis.kind = type;\n\t}\n\n\tpublic Kind getType() {\n\t\treturn kind;\n\t}\n\tpublic boolean isPackage() {\n\t\treturn kind == Kind.ExecutableLoadFile;\n\t}\n\tpublic boolean isApplet() {\n\t\treturn kind == Kind.Application;\n\t}\n\tpublic boolean isDomain() {\n\t\treturn kind == Kind.SecurityDomain || kind == Kind.IssuerSecurityDomain;\n\t}\n\n\tpublic String toString() {\n\t\tStringBuffer result = new StringBuffer();\n\t\tresult.append(\"AID: \" + aid + \", \" + lifecycle + \", Kind: \" + kind.toShortString());\n\t\treturn result.toString();\n\t}\n\n\tpublic String getLifeCycleString() {\n\t\treturn getLifeCycleString(kind, lifecycle);\n\t}\n\n\tpublic static String getLifeCycleString(Kind kind, int lifeCycleState) {\n\t\tswitch (kind) {\n\t\t\tcase IssuerSecurityDomain:\n\t\t\t\tswitch (lifeCycleState) {\n\t\t\t\t\tcase 0x1:\n\t\t\t\t\t\treturn \"OP_READY\";\n\t\t\t\t\tcase 0x7:\n\t\t\t\t\t\treturn \"INITIALIZED\";\n\t\t\t\t\tcase 0xF:\n\t\t\t\t\t\treturn \"SECURED\";\n\t\t\t\t\tcase 0x7F:\n\t\t\t\t\t\treturn \"CARD_LOCKED\";\n\t\t\t\t\tcase 0xFF:\n\t\t\t\t\t\treturn \"TERMINATED\";\n\t\t\t\t\tdefault:\n\t\t\t\t\t\treturn \"ERROR (0x\" + Integer.toHexString(lifeCycleState) +\")\";\n\t\t\t\t}\n\t\t\tcase Application:\n\t\t\t\tif (lifeCycleState == 0x3) {\n\t\t\t\t\treturn \"INSTALLED\";\n\t\t\t\t} else if (lifeCycleState <= 0x7F) {\n\t\t\t\t\tif ((lifeCycleState & 0x78) != 0x00) {\n\t\t\t\t\t\treturn \"SELECTABLE (0x\" + Integer.toHexString(lifeCycleState) +\")\";\n\t\t\t\t\t} else {\n\t\t\t\t\t\treturn \"SELECTABLE\";\n\t\t\t\t\t}\n\t\t\t\t} else if (lifeCycleState > 0x83) {\n\t\t\t\t\treturn \"LOCKED\";\n\t\t\t\t} else {\n\t\t\t\t\treturn \"ERROR (0x\" + Integer.toHexString(lifeCycleState) +\")\";\n\t\t\t\t}\n\t\t\tcase ExecutableLoadFile:\n\t\t\t\t// GP 2.2.1 Table 11-3\n\t\t\t\tif (lifeCycleState == 0x1) {\n\t\t\t\t\treturn \"LOADED\";\n\t\t\t\t} else if (lifeCycleState == 0x00) {\n\t\t\t\t\t// OP201 TODO: remove in v0.5\n\t\t\t\t\treturn \"LOGICALLY_DELETED\";\n\t\t\t\t} else {\n\t\t\t\t\treturn \"ERROR (0x\" + Integer.toHexString(lifeCycleState) +\")\";\n\t\t\t\t}\n\t\t\tcase SecurityDomain:\n\t\t\t\t// GP 2.2.1 Table 11-5\n\t\t\t\tif (lifeCycleState == 0x3) {\n\t\t\t\t\treturn \"INSTALLED\";\n\t\t\t\t} else if (lifeCycleState == 0x7) {\n\t\t\t\t\treturn \"SELECTABLE\";\n\t\t\t\t} else if (lifeCycleState == 0xF) {\n\t\t\t\t\treturn \"PERSONALIZED\";\n\t\t\t\t} else if ((lifeCycleState & 0x83) == 0x83) {\n\t\t\t\t\treturn \"LOCKED\";\n\t\t\t\t} else {\n\t\t\t\t\treturn \"ERROR (0x\" + Integer.toHexString(lifeCycleState) +\")\";\n\t\t\t\t}\n\t\t\tdefault:\n\t\t\t\treturn \"ERROR\";\n\t\t}\n\t}\n\n\tpublic static enum Privilege {\n\t\tSecurityDomain,\n\t\tDAPVerification,\n\t\tDelegatedManagement,\n\t\tCardLock,\n\t\tCardTerminate,\n\t\tCardReset,\n\t\tCVMManagement,\n\t\tMandatedDAPVerification,\n\t\tTrustedPath,\n\t\tAuthorizedManagement,\n\t\tTokenVerification,\n\t\tGlobalDelete,\n\t\tGlobalLock,\n\t\tGlobalRegistry,\n\t\tFinalApplication,\n\t\tGlobalService,\n\t\tReceiptGeneration,\n\t\tCipheredLoadFileDataBlock,\n\t\tContactlessActivation,\n\t\tContactlessSelfActivation\n\t}\n\n\tpublic static class Privileges {\n\t\tprivate EnumSet<Privilege> privs = EnumSet.noneOf(Privilege.class);\n\n\t\t// TODO: implement GP 2.2 table 6.2\n\t\t// TODO: bitmasks as symbolics, KAT tests\n\t\t// See GP 2.2.1 Tables 11-7, 11-8, 11-9\n\t\t// See GP 2.1.1 Table 9-7 (matches 2.2 Table 11-7)\n\t\tpublic static Privileges fromBytes(byte[] data) throws GPDataException {\n\t\t\tif (data.length != 1 && data.length != 3) {\n\t\t\t\tthrow new IllegalArgumentException(\"Privileges must be encoded on 1 or 3 bytes\");\n\t\t\t}\n\t\t\tPrivileges p = new Privileges();\n\t\t\t// Process first byte\n\t\t\tint b1 = data[0] & 0xFF;\n\t\t\tif ((b1 & 0x80) == 0x80) {\n\t\t\t\tp.privs.add(Privilege.SecurityDomain);\n\t\t\t}\n\t\t\tif ((b1 & 0xC1) == 0xC0) {\n\t\t\t\tp.privs.add(Privilege.DAPVerification);\n\t\t\t}\n\t\t\tif ((b1 & 0xA0) == 0xA0) {\n\t\t\t\tp.privs.add(Privilege.DelegatedManagement);\n\t\t\t}\n\t\t\tif ((b1 & 0x10) == 0x10) {\n\t\t\t\tp.privs.add(Privilege.CardLock);\n\t\t\t}\n\t\t\tif ((b1 & 0x8) == 0x8) {\n\t\t\t\tp.privs.add(Privilege.CardTerminate);\n\t\t\t}\n\t\t\tif ((b1 & 0x4) == 0x4) {\n\t\t\t\tp.privs.add(Privilege.CardReset);\n\t\t\t}\n\t\t\tif ((b1 & 0x2) == 0x2) {\n\t\t\t\tp.privs.add(Privilege.CVMManagement);\n\t\t\t}\n\t\t\tif ((b1 & 0xC1) == 0xC1) {\n\t\t\t\tp.privs.add(Privilege.MandatedDAPVerification);\n\t\t\t}\n\t\t\tif (data.length > 1)  {\n\t\t\t\tint b2 = data[1] & 0xFF;\n\t\t\t\tif ((b2 & 0x80) == 0x80) {\n\t\t\t\t\tp.privs.add(Privilege.TrustedPath);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x40) == 0x40) {\n\t\t\t\t\tp.privs.add(Privilege.AuthorizedManagement);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x20) == 0x20) {\n\t\t\t\t\tp.privs.add(Privilege.TokenVerification); // XXX: mismatch in spec\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x10) == 0x10) {\n\t\t\t\t\tp.privs.add(Privilege.GlobalDelete);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x8) == 0x8) {\n\t\t\t\t\tp.privs.add(Privilege.GlobalLock);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x4) == 0x4) {\n\t\t\t\t\tp.privs.add(Privilege.GlobalRegistry);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x2) == 0x2) {\n\t\t\t\t\tp.privs.add(Privilege.FinalApplication);\n\t\t\t\t}\n\t\t\t\tif ((b2 & 0x1) == 0x1) {\n\t\t\t\t\tp.privs.add(Privilege.GlobalService);\n\t\t\t\t}\n\t\t\t\tint b3 = data[2] & 0xFF;\n\t\t\t\tif ((b3 & 0x80) == 0x80) {\n\t\t\t\t\tp.privs.add(Privilege.ReceiptGeneration);\n\t\t\t\t}\n\t\t\t\tif ((b3 & 0x40) == 0x40) {\n\t\t\t\t\tp.privs.add(Privilege.CipheredLoadFileDataBlock);\n\t\t\t\t}\n\t\t\t\tif ((b3 & 0x20) == 0x20) {\n\t\t\t\t\tp.privs.add(Privilege.ContactlessActivation);\n\t\t\t\t}\n\t\t\t\tif ((b3 & 0x10) == 0x10) {\n\t\t\t\t\tp.privs.add(Privilege.ContactlessSelfActivation);\n\t\t\t\t}\n\t\t\t\tif ((b3 & 0xF) != 0x0) {\n\t\t\t\t\t// RFU\n\t\t\t\t\tthrow new GPDataException(\"RFU bits set in privileges!\");\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn p;\n\t\t}\n\n\t\tpublic static Privileges fromByte(byte b) throws GPDataException {\n\t\t\treturn fromBytes(new byte[]{b});\n\t\t}\n\t\tpublic byte[] toBytes() {\n\n\t\t\tEnumSet<Privilege> p = EnumSet.copyOf(privs);\n\t\t\tint b1 = 0x00;\n\t\t\tif (p.remove(Privilege.SecurityDomain)) {\n\t\t\t\tb1 |= 0x80;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.DAPVerification)) {\n\t\t\t\tb1 |= 0xC0;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.DelegatedManagement)) {\n\t\t\t\tb1 |= 0xA0;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.CardLock)) {\n\t\t\t\tb1 |= 0x10;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.CardTerminate)) {\n\t\t\t\tb1 |= 0x8;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.CardReset)) {\n\t\t\t\tb1 |= 0x4;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.CVMManagement)) {\n\t\t\t\tb1 |= 0x2;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.MandatedDAPVerification)) {\n\t\t\t\tb1 |= 0xC1;\n\t\t\t}\n\n\t\t\t// Fits in one byte\n\t\t\tif (p.isEmpty()) {\n\t\t\t\treturn new byte[]{(byte) (b1 &0xFF)};\n\t\t\t}\n\n\t\t\t// Second\n\t\t\tint b2 = 0x00;\n\t\t\tif (p.remove(Privilege.TrustedPath)) {\n\t\t\t\tb2 |= 0x80;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.AuthorizedManagement)) {\n\t\t\t\tb2 |= 0x40;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.TokenVerification)) {\n\t\t\t\tb2 |= 0x20;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.GlobalDelete)) {\n\t\t\t\tb2 |= 0x10;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.GlobalLock)) {\n\t\t\t\tb2 |= 0x8;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.GlobalRegistry)) {\n\t\t\t\tb2 |= 0x4;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.FinalApplication)) {\n\t\t\t\tb2 |= 0x2;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.GlobalService)) {\n\t\t\t\tb2 |= 0x1;\n\t\t\t}\n\n\t\t\t// Third\n\t\t\tint b3 = 0x00;\n\t\t\tif (p.remove(Privilege.ReceiptGeneration)) {\n\t\t\t\tb3 |= 0x80;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.CipheredLoadFileDataBlock)) {\n\t\t\t\tb3 |= 0x40;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.ContactlessActivation)) {\n\t\t\t\tb3 |= 0x20;\n\t\t\t}\n\t\t\tif (p.remove(Privilege.ContactlessSelfActivation)) {\n\t\t\t\tb3 |= 0x10;\n\t\t\t}\n\t\t\treturn new byte[]{(byte)(b1 & 0xFF), (byte)(b2 & 0xFF),  (byte)(b3 & 0xFF) };\n\t\t}\n\n\t\tpublic String toString() {\n\t\t\treturn Joiner.on(\", \").join(privs);\n\t\t}\n\t\tpublic boolean has(Privilege p) {\n\t\t\treturn privs.contains(p);\n\t\t}\n\t\tpublic void add(Privilege p) {\n\t\t\tprivs.add(p);\n\t\t}\n\t\tpublic boolean isEmpty() {\n\t\t\treturn privs.size() == 0;\n\t\t}\n\t}\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/pro/javacard/gp/GPRegistryEntry.java	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ src/pro/javacard/gp/GPRegistryEntry.java	(revision )
+@@ -181,6 +181,14 @@
+ 	public static class Privileges {
+ 		private EnumSet<Privilege> privs = EnumSet.noneOf(Privilege.class);
+ 
++		public static Privileges set(Privilege...privs) {
++			Privileges p = new Privileges();
++			for (Privilege pv: privs) {
++				p.add(pv);
++			}
++			return p;
++		}
++
+ 		// TODO: implement GP 2.2 table 6.2
+ 		// TODO: bitmasks as symbolics, KAT tests
+ 		// See GP 2.2.1 Tables 11-7, 11-8, 11-9
+@@ -344,6 +352,13 @@
+ 			return new byte[]{(byte)(b1 & 0xFF), (byte)(b2 & 0xFF),  (byte)(b3 & 0xFF) };
+ 		}
+ 
++		public byte toByte() {
++			byte [] bytes = toBytes();
++			if (bytes.length == 1)
++				return bytes[0];
++			throw new IllegalStateException("This privileges set can not be encoded in one byte");
++		}
++
+ 		public String toString() {
+ 			return Joiner.on(", ").join(privs);
+ 		}
+Index: src/pro/javacard/gp/GPData.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * GlobalPlatformPro - GlobalPlatform tool\n *\n * Copyright (C) 2015-2016 Martin Paljak, martin@martinpaljak.net\n *\n * This library is free software; you can redistribute it and/or\n * modify it under the terms of the GNU Lesser General Public\n * License as published by the Free Software Foundation; either\n * version 3.0 of the License, or (at your option) any later version.\n *\n * This library is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n * Lesser General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public\n * License along with this library; if not, write to the Free Software\n * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA\n */\npackage pro.javacard.gp;\n\nimport java.io.IOException;\nimport java.io.PrintStream;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.HashMap;\nimport java.util.List;\n\nimport javax.smartcardio.CardException;\n\nimport org.bouncycastle.asn1.ASN1ApplicationSpecific;\nimport org.bouncycastle.asn1.ASN1Encodable;\nimport org.bouncycastle.asn1.ASN1InputStream;\nimport org.bouncycastle.asn1.ASN1ObjectIdentifier;\nimport org.bouncycastle.asn1.ASN1Sequence;\nimport org.bouncycastle.asn1.BERTags;\nimport org.bouncycastle.asn1.DERApplicationSpecific;\nimport org.bouncycastle.asn1.util.ASN1Dump;\nimport org.bouncycastle.util.encoders.Hex;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\n\nimport apdu4j.HexUtils;\nimport com.google.common.collect.Lists;\nimport pro.javacard.gp.GPKeySet.GPKey;\nimport pro.javacard.gp.GPKeySet.GPKey.Type;\nimport pro.javacard.gp.GlobalPlatform.GPSpec;\n\npublic final class GPData {\n  public static final byte[] defaultKeyBytes = { 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F };\n  public static final GPKey defaultKey = new GPKey(defaultKeyBytes, Type.DES3);\n  // SD states\n  public static final byte readyStatus = 0x1;\n  public static final byte initializedStatus = 0x7;\n  public static final byte securedStatus = 0xF;\n  public static final byte lockedStatus = 0x7F;\n  public static final byte terminatedStatus = (byte) 0xFF;\n  // See GP 2.1.1 Table 9-7: Application Privileges\n  @Deprecated\n  public static final byte defaultSelectedPriv = 0x04;\n  @Deprecated\n  public static final byte cardLockPriv = 0x10;\n  @Deprecated\n  public static final byte cardTerminatePriv = 0x08;\n  @Deprecated\n  public static final byte securityDomainPriv = (byte) 0x80;\n  private final static Logger LOGGER = LoggerFactory.getLogger(GPData.class);\n\n  // TODO GP 2.2.1 11.1.2\n\n  // GP 2.1.1 9.1.6\n  // GP 2.2.1 11.1.8\n  public static String get_key_type_coding_string(int type) {\n    if ((0x00 <= type) && (type <= 0x7f)) {\n      return \"Reserved for private use\";\n    }\n    // symmetric\n    if (0x80 == type) {\n      return \"DES - mode (ECB/CBC) implicitly known\";\n    }\n    if (0x81 == type) {\n      return \"Reserved (Triple DES)\";\n    }\n    if (0x82 == type) {\n      return \"Triple DES in CBC mode\";\n    }\n    if (0x83 == type) {\n      return \"DES in ECB mode\";\n    }\n    if (0x84 == type) {\n      return \"DES in CBC mode\";\n    }\n    if (0x85 == type) {\n      return \"Pre-Shared Key for Transport Layer Security\";\n    }\n    if (0x88 == type) {\n      return \"AES (16, 24, or 32 long keys)\";\n    }\n    if (0x90 == type) {\n      return \"HMAC-SHA1 - length of HMAC is implicitly known\";\n    }\n    if (0x91 == type) {\n      return \"MAC-SHA1-160 - length of HMAC is 160 bits\";\n    }\n    if (type == 0x86 || type == 0x87 || ((0x89 <= type) && (type <= 0x8F)) || ((0x92 <= type) && (type <= 0x9F))) {\n      return \"RFU (asymmetric algorithms)\";\n    }\n    // asymmetric\n    if (0xA0 == type) {\n      return \"RSA Public Key - public exponent e component (clear text)\";\n    }\n    if (0xA1 == type) {\n      return \"RSA Public Key - modulus N component (clear text)\";\n    }\n    if (0xA2 == type) {\n      return \"RSA Private Key - modulus N component\";\n    }\n    if (0xA3 == type) {\n      return \"RSA Private Key - private exponent d component\";\n    }\n    if (0xA4 == type) {\n      return \"RSA Private Key - Chinese Remainder P component\";\n    }\n    if (0xA5 == type) {\n      return \"RSA Private Key - Chinese Remainder Q component\";\n    }\n    if (0xA6 == type) {\n      return \"RSA Private Key - Chinese Remainder PQ component\";\n    }\n    if (0xA7 == type) {\n      return \"RSA Private Key - Chinese Remainder DP1 component\";\n    }\n    if (0xA8 == type) {\n      return \"RSA Private Key - Chinese Remainder DQ1 component\";\n    }\n    if ((0xA9 <= type) && (type <= 0xFE)) {\n      return \"RFU (asymmetric algorithms)\";\n    }\n    if (0xFF == type) {\n      return \"Extended Format\";\n    }\n\n    return \"UNKNOWN\";\n  }\n\n  ;\n\n  // Print the key template\n  public static void pretty_print_key_template(List<GPKeySet.GPKey> list, PrintStream out) {\n    boolean factory_keys = false;\n    out.flush();\n    for (GPKey k : list) {\n      out.println(\"VER:\" + k.getVersion() + \" ID:\" + k.getID() + \" TYPE:\" + k.getType() + \" LEN:\" + k.getLength());\n      if (k.getVersion() == 0x00 || k.getVersion() == 0xFF) {\n        factory_keys = true;\n      }\n    }\n    if (factory_keys) {\n      out.println(\"Key version suggests factory keys\");\n    }\n    out.flush();\n  }\n\n  // GP 2.1.1 9.3.3.1\n  // GP 2.2.1 11.1.8\n  public static List<GPKeySet.GPKey> get_key_template_list(byte[] data) throws GPException {\n    LOGGER.info(\"get_key_template_list {}\", Hex.toHexString(data));\n    List<GPKey> r = new ArrayList<>();\n\n    try (ASN1InputStream ais = new ASN1InputStream(data)) {\n      while (ais.available() > 0) {\n        ASN1ApplicationSpecific keys = (DERApplicationSpecific) ais.readObject();\n        // System.out.println(ASN1Dump.dumpAsString(keys, true));\n        LOGGER.info(\"ASN1Dump {}\", ASN1Dump.dumpAsString(keys, true));\n\n        ASN1Sequence seq = (ASN1Sequence) keys.getObject(BERTags.SEQUENCE);\n        for (ASN1Encodable p : Lists.newArrayList(seq.iterator())) {\n          ASN1ApplicationSpecific key = (DERApplicationSpecific) p.toASN1Primitive();\n          byte[] tmpl = key.getContents();\n          if (tmpl.length < 4) {\n            throw new GPDataException(\"Key info template shorter than 4 bytes\", tmpl);\n          }\n          int id = tmpl[0] & 0xFF;\n          int version = tmpl[1] & 0xFF;\n          int type = tmpl[2] & 0xFF;\n          int length = tmpl[3] & 0xFF;\n          if (type == 0xFF) {\n            throw new GPDataException(\"Extended key template not yet supported\", tmpl);\n          }\n          LOGGER.warn(\"Key version {} id {} length {} type {} {}\", version, id, length, String.format(\"0x%02X\", type), get_key_type_coding_string(type));\n          r.add(new GPKey(version, id, length, type));\n        }\n      }\n    } catch (IOException | ClassCastException e) {\n      throw new GPDataException(\"Could not parse key template: \" + e.getMessage(), e);\n    }\n    return r;\n  }\n\n  public static GPSpec get_version_from_card_data(byte[] data) throws GPException {\n    try (ASN1InputStream ais = new ASN1InputStream(data)) {\n      if (ais.available() > 0) {\n        // Read card recognition data\n        DERApplicationSpecific card_data = (DERApplicationSpecific) ais.readObject();\n        ASN1Sequence seq = (ASN1Sequence) card_data.getObject(BERTags.SEQUENCE);\n        for (ASN1Encodable p : Lists.newArrayList(seq.iterator())) {\n          if (p instanceof ASN1ObjectIdentifier) {\n            ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) p;\n            // Must be fixed\n            if (!oid.toString().equalsIgnoreCase(\"1.2.840.114283.1\")) {\n              throw new GPDataException(\"Invalid CardRecognitionData: \" + oid.toString());\n            }\n          } else if (p instanceof DERApplicationSpecific) {\n            DERApplicationSpecific tag = (DERApplicationSpecific) p;\n            int n = tag.getApplicationTag();\n            if (n == 0) {\n              // Version\n              String oid = ASN1ObjectIdentifier.getInstance(tag.getObject()).toString();\n\n              if (oid.equalsIgnoreCase(\"1.2.840.114283.2.2.1.1\")) {\n                return GPSpec.GP211;\n              } else if (oid.equalsIgnoreCase(\"1.2.840.114283.2.2.2\")) {\n                return GPSpec.GP22;\n              } else if (oid.equals(\"1.2.840.114283.2.2.2.1\")) {\n                return GPSpec.GP22; // TODO: no need to differentiate currently\n              } else {\n                throw new GPDataException(\"Invalid GP version OID: \" + oid);\n              }\n            }\n          } else {\n            throw new GPDataException(\"Invalid type in card data\", p.toASN1Primitive().getEncoded());\n          }\n        }\n      }\n    } catch (IOException | ClassCastException e) {\n      throw new GPDataException(\"Invalid data: \" + e.getMessage());\n    }\n    // Default to GP211\n    return GPSpec.GP211;\n  }\n\n  // GP 2.1.1: F.2 Table F-1\n  public static void pretty_print_card_data(byte[] data, PrintStream out) {\n    if (data == null) {\n      out.println(\"NO CARD DATA\");\n      return;\n    }\n    out.println(\"CARD DATA: \" + Hex.toHexString(data));\n    try {\n      int offset = 0;\n      offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x66);\n      offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x73);\n      while (offset < data.length) {\n        int tag = TLVUtils.getTLVTag(data, offset);\n        out.println(\"TAG: \" + String.format(\"%02X\", tag) + \" offset: \" + offset + \" DATA: \" + Hex.toHexString(data, offset, 2 + data[offset + 1]));\n        if (tag == 0x06) {\n          String oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVAsBytes(data, offset)).toString();\n          out.println(\"OID: \" + oid);\n          if (oid.equals(\"1.2.840.114283.1\")) {\n            out.println(\"GlobalPlatform card\");\n          }\n        } else if (tag == 0x60) {\n          out.println(\"Version: \" + gp_version_from_tlv(data, offset));\n        } else if (tag == 0x63) {\n          out.println(\"OID for Card Identification Scheme\");\n          out.println(\"TAG3: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        } else if (tag == 0x64) {\n          out.println(\"SCP version: \" + gp_scp_version_from_tlv(data, offset));\n        } else if (tag == 0x65) {\n          out.println(\"TAG5: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        } else if (tag == 0x66) {\n          out.println(\"TAG6: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        } else if (tag == 0x67) {\n          out.println(\"TAG7: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        } else if (tag == 0x68) {\n          out.println(\"TAG8: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        } else {\n          out.println(\"Unknown tag: \" + Integer.toHexString(tag));\n          out.println(\"Unknown tag: \" + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));\n        }\n        offset = TLVUtils.skipAnyTag(data, offset);\n      }\n    } catch (IOException e) {\n      throw new RuntimeException(e);\n    }\n  }\n\n  static String gp_version_from_tlv(byte[] data, int offset) {\n    try {\n      String oid;\n      oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)).toString();\n      if (oid.startsWith(\"1.2.840.114283.2\")) {\n        return oid.substring(\"1.2.840.114283.2.\".length());\n      } else {\n        return \"unknown\";\n      }\n    } catch (IOException e) {\n      return \"error\";\n    }\n  }\n\n  static String gp_scp_version_from_tlv(byte[] data, int offset) {\n    try {\n      String oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)).toString();\n      System.out.println(\"OID: \" + oid);\n      if (oid.startsWith(\"1.2.840.114283.4\")) {\n        String[] p = oid.substring(\"1.2.840.114283.4.\".length()).split(\"\\\\.\");\n        switch (p.length) {\n          case 2:\n            return \"SCP_0\" + String.format(\"%02x\", Integer.valueOf(p[0])) + \"_\" + String.format(\"%02x\", Integer.valueOf(p[1]));\n          default:\n            return oid;\n        }\n      } else {\n        return \"unknown\";\n      }\n    } catch (IOException e) {\n      return \"error\";\n    }\n  }\n\n  public static void get_global_platform_version(byte[] data) {\n    int offset = 0;\n    offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x66);\n    offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x73);\n    offset = TLVUtils.findTag(data, offset, (byte) 0x60);\n  }\n\n  public static void pretty_print_cplc(byte[] data, PrintStream out) {\n    if (data == null) {\n      out.println(\"NO CPLC\");\n      return;\n    }\n    CPLC cplc = new CPLC(data);\n    out.println(cplc);\n  }\n\n  public static void pretty_print_putkey_response(byte[] data, PrintStream out) {\n    if (data == null) {\n      out.println(\"NO PUTKEY RESPONSE\");\n      return;\n    }\n    PutKeyResponse putKeyResponse = new PutKeyResponse(data);\n    out.println(putKeyResponse);\n  }\n\n  // TODO public for debuggin purposes\n  public static void print_card_info(GlobalPlatform gp) throws CardException, GPException {\n    // Print CPLC\n    pretty_print_cplc(gp.getCPLC(), System.out);\n    // Requires GP?\n    // Print CardData\n    System.out.println(\"***** CARD DATA\");\n    byte[] card_data = gp.fetchCardData();\n    pretty_print_card_data(card_data, System.out);\n    // Print Key Info Template\n    System.out.println(\"***** KEY INFO\");\n    pretty_print_key_template(gp.getKeyInfoTemplate(), System.out);\n  }\n\n  public static void main(String[] args) throws Exception {\n    get_version_from_card_data(HexUtils.hex2bin(\n        \"734A06072A864886FC6B01600C060A2A864886FC6B02020101630906072A864886FC6B03640B06092A864886FC6B040215650B06092B8510864864020103660C060A2B060104012A026E0102\"));\n  }\n\n\n  public enum KeyType {\n    // ID is as used in diversification/derivation\n    // That is - one based.\n    ENC(1),\n    MAC(2),\n    KEK(3),\n    RMAC(4);\n\n    private final int value;\n\n    private KeyType(int value) {\n      this.value = value;\n    }\n\n    public byte getValue() {\n      return (byte) (value & 0xFF);\n    }\n  }\n\n  public static final class CPLC {\n\n    private HashMap<Field, byte[]> values = null;\n\n    public CPLC(byte[] data) {\n      if (data == null || data.length < 3 || data[2] != 0x2A) {\n        throw new IllegalArgumentException(\"CPLC must be 0x2A bytes long\");\n      }\n      //offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);\n      short offset = 3;\n      values = new HashMap<>();\n      values.put(Field.ICFabricator, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICType, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.OperatingSystemID, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.OperatingSystemReleaseDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.OperatingSystemReleaseLevel, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICFabricationDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICSerialNumber, Arrays.copyOfRange(data, offset, offset + 4));\n      offset += 4;\n      values.put(Field.ICBatchIdentifier, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICModuleFabricator, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICModulePackagingDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICCManufacturer, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICEmbeddingDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICPrePersonalizer, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICPrePersonalizationEquipmentDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICPrePersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4));\n      offset += 4;\n      values.put(Field.ICPersonalizer, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICPersonalizationDate, Arrays.copyOfRange(data, offset, offset + 2));\n      offset += 2;\n      values.put(Field.ICPersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4));\n      offset += 4;\n    }\n\n    public String toString() {\n      String s = \"Card CPLC:\";\n      for (Field f : Field.values()) {\n        s += \"\\n\" + f.name() + \": \" + HexUtils.bin2hex(values.get(f));\n      }\n      return s;\n    }\n\n    public enum Field {\n      ICFabricator,\n      ICType,\n      OperatingSystemID,\n      OperatingSystemReleaseDate,\n      OperatingSystemReleaseLevel,\n      ICFabricationDate,\n      ICSerialNumber,\n      ICBatchIdentifier,\n      ICModuleFabricator,\n      ICModulePackagingDate,\n      ICCManufacturer,\n      ICEmbeddingDate,\n      ICPrePersonalizer,\n      ICPrePersonalizationEquipmentDate,\n      ICPrePersonalizationEquipmentID,\n      ICPersonalizer,\n      ICPersonalizationDate,\n      ICPersonalizationEquipmentID\n    }\n  }\n\n  public static final class PutKeyResponse {\n\n    private int keyVersion;\n    private HashMap<Integer, byte[]> kcvvalues = new HashMap<>();\n\n    public PutKeyResponse(byte[] data) {\n      keyVersion = data[0];\n      for (int i = 0; i < (data.length - 1) / 3; i++) {\n        byte[] kcv = new byte[3];\n        System.arraycopy(data, (i * 3) + 1, kcv, 0, 3);\n        kcvvalues.put(i, kcv);\n      }\n    }\n\n    public String toString() {\n      String s = \"Card PutKeyResponse: \";\n      s += \" Key version \";\n      s += keyVersion;\n      for (HashMap.Entry<Integer, byte[]> entry : kcvvalues.entrySet()) {\n        s += \" KCV[\" + entry.getKey() + \"]:\" + HexUtils.bin2hex(entry.getValue());\n      }\n      return s;\n    }\n\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/pro/javacard/gp/GPData.java	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ src/pro/javacard/gp/GPData.java	(revision )
+@@ -487,4 +487,346 @@
+     }
+ 
+   }
++=======
++	public static final byte[] defaultKeyBytes = { 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F };
++	public static final GPKey defaultKey = new GPKey(defaultKeyBytes, Type.DES3);
++
++	// SD states
++	public static final byte readyStatus = 0x1;
++	public static final byte initializedStatus = 0x7;
++	public static final byte securedStatus = 0xF;
++	public static final byte lockedStatus = 0x7F;
++	public static final byte terminatedStatus = (byte) 0xFF;
++
++	// See GP 2.1.1 Table 9-7: Application Privileges
++	@Deprecated
++	public static final byte defaultSelectedPriv = 0x04;
++	@Deprecated
++	public static final byte cardLockPriv = 0x10;
++	@Deprecated
++	public static final byte cardTerminatePriv = 0x08;
++	@Deprecated
++	public static final byte securityDomainPriv = (byte) 0x80;
++
++	// TODO GP 2.2.1 11.1.2
++
++
++	public enum KeyType {
++		// ID is as used in diversification/derivation
++		// That is - one based.
++		ENC(1), MAC(2), KEK(3), RMAC(4);
++
++		private final int value;
++
++		private KeyType(int value) {
++			this.value = value;
++		}
++
++		public byte getValue() {
++			return (byte) (value & 0xFF);
++		}
++	};
++
++	// GP 2.1.1 9.1.6
++	// GP 2.2.1 11.1.8
++	public static String get_key_type_coding_string(int type) {
++		if ((0x00 <= type) && (type <= 0x7f))
++			return "Reserved for private use";
++		// symmetric
++		if (0x80 == type)
++			return "DES - mode (ECB/CBC) implicitly known";
++		if (0x81 == type)
++			return "Reserved (Triple DES)";
++		if (0x82 == type)
++			return "Triple DES in CBC mode";
++		if (0x83 == type)
++			return "DES in ECB mode";
++		if (0x84 == type)
++			return "DES in CBC mode";
++		if (0x85 == type)
++			return "Pre-Shared Key for Transport Layer Security";
++		if (0x88 == type)
++			return "AES (16, 24, or 32 long keys)";
++		if (0x90 == type)
++			return "HMAC-SHA1 - length of HMAC is implicitly known";
++		if (0x91 == type)
++			return "MAC-SHA1-160 - length of HMAC is 160 bits";
++		if (type == 0x86 || type == 0x87 || ((0x89 <= type) && (type <= 0x8F)) || ((0x92 <= type) && (type <= 0x9F)))
++			return "RFU (asymmetric algorithms)";
++		// asymmetric
++		if (0xA0 == type)
++			return "RSA Public Key - public exponent e component (clear text)";
++		if (0xA1 == type)
++			return "RSA Public Key - modulus N component (clear text)";
++		if (0xA2 == type)
++			return "RSA Private Key - modulus N component";
++		if (0xA3 == type)
++			return "RSA Private Key - private exponent d component";
++		if (0xA4 == type)
++			return "RSA Private Key - Chinese Remainder P component";
++		if (0xA5 == type)
++			return "RSA Private Key - Chinese Remainder Q component";
++		if (0xA6 == type)
++			return "RSA Private Key - Chinese Remainder PQ component";
++		if (0xA7 == type)
++			return "RSA Private Key - Chinese Remainder DP1 component";
++		if (0xA8 == type)
++			return "RSA Private Key - Chinese Remainder DQ1 component";
++		if ((0xA9 <= type) && (type <= 0xFE))
++			return "RFU (asymmetric algorithms)";
++		if (0xFF == type)
++			return "Extended Format";
++
++		return "UNKNOWN";
++	}
++
++	// Print the key template
++	public static void pretty_print_key_template(List<GPKeySet.GPKey> list, PrintStream out) {
++		boolean factory_keys = false;
++		out.flush();
++		for (GPKey k: list) {
++			out.println("VER:" + k.getVersion() + " ID:" + k.getID() + " TYPE:"+ k.getType() + " LEN:" + k.getLength());
++			if (k.getVersion() == 0x00 || k.getVersion() == 0xFF)
++				factory_keys = true;
++		}
++		if (factory_keys) {
++			out.println("Key version suggests factory keys");
++		}
++		out.flush();
++	}
++
++	// GP 2.1.1 9.3.3.1
++	// GP 2.2.1 11.1.8
++	public static List<GPKeySet.GPKey> get_key_template_list(byte[] data) throws GPException {
++		List<GPKey> r = new ArrayList<>();
++
++		try (ASN1InputStream ais = new ASN1InputStream(data)) {
++			while (ais.available() > 0) {
++				ASN1ApplicationSpecific keys = (DERApplicationSpecific)ais.readObject();
++				// System.out.println(ASN1Dump.dumpAsString(keys, true));
++
++				ASN1Sequence seq = (ASN1Sequence) keys.getObject(BERTags.SEQUENCE);
++				for (ASN1Encodable p: Lists.newArrayList(seq.iterator())) {
++					ASN1ApplicationSpecific key = (DERApplicationSpecific) p.toASN1Primitive();
++					byte [] tmpl = key.getContents();
++					if (tmpl.length < 4) {
++						throw new GPDataException("Key info template shorter than 4 bytes", tmpl);
++					}
++					int id = tmpl[0] & 0xFF;
++					int version = tmpl[1] & 0xFF;
++					int type = tmpl[2] & 0xFF;
++					int length = tmpl[3] & 0xFF;
++					if (type == 0xFF) {
++						throw new GPDataException("Extended key template not yet supported", tmpl);
++					}
++					r.add(new GPKey(version, id, length, type));
++				}
++			}
++		} catch (IOException | ClassCastException e) {
++			throw new GPDataException("Could not parse key template: " + e.getMessage(), e);
++		}
++		return r;
++	}
++
++	public static GPSpec get_version_from_card_data(byte[] data) throws GPException {
++		try (ASN1InputStream ais = new ASN1InputStream(data)) {
++			if (ais.available() > 0) {
++				// Read card recognition data
++				DERApplicationSpecific card_data = (DERApplicationSpecific) ais.readObject();
++				ASN1Sequence seq = (ASN1Sequence) card_data.getObject(BERTags.SEQUENCE);
++				for (ASN1Encodable p: Lists.newArrayList(seq.iterator())) {
++					if (p instanceof ASN1ObjectIdentifier) {
++						ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) p;
++						// Must be fixed
++						if (!oid.toString().equalsIgnoreCase("1.2.840.114283.1")) {
++							throw new GPDataException("Invalid CardRecognitionData: " + oid.toString());
++						}
++					} else if (p instanceof DERApplicationSpecific) {
++						DERApplicationSpecific tag = (DERApplicationSpecific) p;
++						int n = tag.getApplicationTag();
++						if (n == 0) {
++							// Version
++							String oid = ASN1ObjectIdentifier.getInstance(tag.getObject()).toString();
++
++							if (oid.equalsIgnoreCase("1.2.840.114283.2.2.1.1")) {
++								return GPSpec.GP211;
++							} else if (oid.equalsIgnoreCase("1.2.840.114283.2.2.2")) {
++								return GPSpec.GP22;
++							} else if (oid.equals("1.2.840.114283.2.2.2.1")) {
++								return GPSpec.GP22; // TODO: no need to differentiate currently
++							} else {
++								throw new GPDataException("Invalid GP version OID: " + oid);
++							}
++						}
++					} else {
++						throw new GPDataException("Invalid type in card data", p.toASN1Primitive().getEncoded());
++					}
++				}
++			}
++		} catch (IOException | ClassCastException e) {
++			throw new GPDataException("Invalid data: " + e.getMessage());
++		}
++		// Default to GP211
++		return GPSpec.GP211;
++	}
++
++
++	// GP 2.1.1: F.2 Table F-1
++	public static void pretty_print_card_data(byte[] data, PrintStream out) {
++		if (data == null) {
++			out.println("NO CARD DATA");
++			return;
++		}
++		try {
++			int offset = 0;
++			offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x73);
++			while (offset < data.length) {
++				int tag = TLVUtils.getTLVTag(data, offset);
++				if (tag == 0x06) {
++					String oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVAsBytes(data, offset)).toString();
++					if (oid.equals("1.2.840.114283.1"))
++						out.println("GlobalPlatform card");
++				} else if (tag == 0x60) {
++					out.println("Version: " + gp_version_from_tlv(data, offset));
++				} else if (tag == 0x63) {
++					out.println("TAG3: " + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));
++				} else if (tag == 0x64) {
++					out.println("SCP version: " + gp_scp_version_from_tlv(data, offset));
++				} else if (tag == 0x65) {
++					out.println("TAG5: " + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));
++				} else if (tag == 0x66) {
++					out.println("TAG6: " + ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)));
++				} else {
++					out.println("Unknown tag: " + Integer.toHexString(tag));
++				}
++				offset = TLVUtils.skipAnyTag(data, offset);
++			}
++		} catch (IOException e) {
++			throw new RuntimeException(e);
++		}
++	}
++
++	static String gp_version_from_tlv(byte[] data, int offset) {
++		try {
++			String oid;
++			oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)).toString();
++			if (oid.startsWith("1.2.840.114283.2")) {
++				return oid.substring("1.2.840.114283.2.".length());
++			} else {
++				return "unknown";
++			}
++		} catch (IOException e) {
++			return "error";
++		}
++	}
++
++	static String gp_scp_version_from_tlv(byte[] data, int offset) {
++		try {
++			String oid;
++			oid = ASN1ObjectIdentifier.fromByteArray(TLVUtils.getTLVValueAsBytes(data, offset)).toString();
++			if (oid.startsWith("1.2.840.114283.4")) {
++				String[] p = oid.substring("1.2.840.114283.4.".length()).split("\\.");
++				return "SCP_0" +p[0] + "_" + String.format("%02x",Integer.valueOf(p[1]));
++			} else {
++				return "unknown";
++			}
++		} catch (IOException e) {
++			return "error";
++		}
++	}
++
++	public static void get_global_platform_version(byte[] data) {
++		int offset = 0;
++		offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x66);
++		offset = TLVUtils.skipTagAndLength(data, offset, (byte) 0x73);
++		offset = TLVUtils.findTag(data, offset, (byte) 0x60);
++	}
++
++	public static void pretty_print_cplc(byte [] data, PrintStream out) {
++		if (data == null) {
++			out.println("NO CPLC");
++			return;
++		}
++		CPLC cplc = new CPLC(data);
++		out.println(cplc);
++	}
++
++
++	// TODO public for debuggin purposes
++	public static void print_card_info(GlobalPlatform gp) throws CardException, GPException {
++		// Print CPLC
++		pretty_print_cplc(gp.getCPLC(), System.out);
++		// Requires GP?
++		// Print CardData
++		System.out.println("***** CARD DATA");
++		byte [] card_data = gp.fetchCardData();
++		pretty_print_card_data(card_data, System.out);
++		// Print Key Info Template
++		System.out.println("***** KEY INFO");
++		pretty_print_key_template(gp.getKeyInfoTemplate(), System.out);
++	}
++
++
++	public static final class CPLC {
++
++		public enum Field {
++			ICFabricator,
++			ICType,
++			OperatingSystemID,
++			OperatingSystemReleaseDate,
++			OperatingSystemReleaseLevel,
++			ICFabricationDate,
++			ICSerialNumber,
++			ICBatchIdentifier,
++			ICModuleFabricator,
++			ICModulePackagingDate,
++			ICCManufacturer,
++			ICEmbeddingDate,
++			ICPrePersonalizer,
++			ICPrePersonalizationEquipmentDate,
++			ICPrePersonalizationEquipmentID,
++			ICPersonalizer,
++			ICPersonalizationDate,
++			ICPersonalizationEquipmentID
++		};
++		private HashMap<Field, byte[]> values = null;
++
++		public CPLC(byte [] data) {
++			if (data == null || data.length < 3 || data[2] != 0x2A)
++				throw new IllegalArgumentException("CPLC must be 0x2A bytes long");
++			//offset = TLVUtils.skipTag(data, offset, (short)0x9F7F);
++			short offset = 3;
++			values = new HashMap<>();
++			values.put(Field.ICFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICType, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.OperatingSystemID, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.OperatingSystemReleaseDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.OperatingSystemReleaseLevel, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICFabricationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICSerialNumber, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
++			values.put(Field.ICBatchIdentifier, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICModuleFabricator, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICModulePackagingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICCManufacturer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICEmbeddingDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICPrePersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICPrePersonalizationEquipmentDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICPrePersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
++			values.put(Field.ICPersonalizer, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICPersonalizationDate, Arrays.copyOfRange(data, offset, offset + 2)); offset += 2;
++			values.put(Field.ICPersonalizationEquipmentID, Arrays.copyOfRange(data, offset, offset + 4)); offset += 4;
++		}
++
++		public String toString() {
++			String s = "Card CPLC:";
++			for (Field f: Field.values()) {
++				s += "\n" + f.name() + ": " + HexUtils.bin2hex(values.get(f));
++			}
++			return s;
++		}
++	}
++
++	public static void main(String[] args) throws Exception {
++		get_version_from_card_data(HexUtils.hex2bin("734A06072A864886FC6B01600C060A2A864886FC6B02020101630906072A864886FC6B03640B06092A864886FC6B040215650B06092B8510864864020103660C060A2B060104012A026E0102"));
++	}
+ }
+Index: .travis.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>sudo: false\nlanguage: java\njdk:\n- oraclejdk8\nbefore_script:\n- mkdir -p ext\n- wget http://heanet.dl.sourceforge.net/project/launch4j/launch4j-3/3.9/launch4j-3.9-linux.tgz\n- echo \"e6e9a83927585d16efcb82f41d4ae480f14eccc19ced611a59f31fffb5ca549b  launch4j-3.9-linux.tgz\"\n  | sha256sum -c\n- tar -C ext -xzf launch4j-3.9-linux.tgz\n- ant fetch\nscript: ant windist\nenv:\n  global:\n    secure: Df5FIHnieDJj8AAwgeAh779Rs+aoJ8e9WQN0ero4OfcJ2Y1G7InBZQIGesfVR1M7EX4Hf0fvmUam9zthdwi4culk+gJeOAMM/wpCqvEUyWDTd78Cr08L7PjNW8RCq5NCYhgvO1j+IzJOA3IR6h8DSS4QGZtJqPYk65ZQ1uRyAGc=\nnotifications:\n  irc:\n    on_success: change\n    on_failure: always\n    channels:\n    - irc.freenode.org#javacard\naddons:\n  apt:\n    packages:\n    - libc6:i386\n  coverity_scan:\n    project:\n      name: martinpaljak/GlobalPlatformPro\n    notification_email: martin@martinpaljak.net\n    build_command_prepend: ant fetch\n    build_command: ant compile\n    branch_pattern: coverity\ndeploy:\n  - provider: gcs\n    access_key_id: GOOGQ7KC7VVKLVNTAVB7\n    secret_access_key:\n      secure: D/g4zF7rKLLDcNR8eQsa5mUS7iFvaOP5d83n4pgjIVDNcDyeMS2eiZORw+rqqKgS9rpbliFU7MDbDK40yqCSK6a1shVfmpBwSfEZXE1TjfflN13LkreCIQ+ZACo3zt2jIr7xxMZz9um0FofOuLJbdjvQNG66hbgN9rXxyeOxSoE=\n    bucket: github-martinpaljak-builds\n    on:\n      repo: martinpaljak/GlobalPlatformPro\n    skip_cleanup: true\n  - provider: releases\n    file:\n      - gp.jar\n      - openkms-gp.jar\n      - gp.exe\n    api-key:\n      secure: JD2xCdTGa6Vif2Qs7z77tWWMM8KdlgRVKFkzOprCXiDJRr36Vu2lVkOFW4AvvNudKQNZn8xOhYcebd2YBITdmFczt1vyPItoSjZ+sAQO3hIJ0r2+E+XVX8mj5Nw6NF6Jobd87VFMPJ7cE07gaDE5FzpdIWB7hMpyEPYV++azCG8=\n    skip_cleanup: true\n    on:\n      tags: true\n      repo: martinpaljak/GlobalPlatformPro\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .travis.yml	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ .travis.yml	(revision )
+@@ -4,7 +4,7 @@
+ - oraclejdk8
+ before_script:
+ - mkdir -p ext
+-- wget http://heanet.dl.sourceforge.net/project/launch4j/launch4j-3/3.9/launch4j-3.9-linux.tgz
++- wget http://kent.dl.sourceforge.net/project/launch4j/launch4j-3/3.9/launch4j-3.9-linux.tgz
+ - echo "e6e9a83927585d16efcb82f41d4ae480f14eccc19ced611a59f31fffb5ca549b  launch4j-3.9-linux.tgz"
+   | sha256sum -c
+ - tar -C ext -xzf launch4j-3.9-linux.tgz
+@@ -30,6 +30,9 @@
+     build_command_prepend: ant fetch
+     build_command: ant compile
+     branch_pattern: coverity
++before_deploy:
++- mkdir -p output
++- cp gp.jar output
+ deploy:
+   - provider: gcs
+     access_key_id: GOOGQ7KC7VVKLVNTAVB7
+@@ -39,6 +42,10 @@
+     on:
+       repo: martinpaljak/GlobalPlatformPro
+     skip_cleanup: true
++    acl: public-read
++    all_branches: true
++    local-dir: output
++    upload-dir: travis-builds-123
+   - provider: releases
+     file:
+       - gp.jar
+Index: src/pro/javacard/gp/GlobalPlatform.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/*\n * gpj - Global Platform for Java SmartCardIO\n *\n * Copyright (C) 2009 Wojciech Mostowski, woj@cs.ru.nl\n * Copyright (C) 2009 Francois Kooman, F.Kooman@student.science.ru.nl\n * Copyright (C) 2014-2016 Martin Paljak, martin@martinpaljak.net\n *\n * This library is free software; you can redistribute it and/or\n * modify it under the terms of the GNU Lesser General Public\n * License as published by the Free Software Foundation; either\n * version 3.0 of the License, or (at your option) any later version.\n *\n * This library is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n * Lesser General Public License for more details.\n *\n * You should have received a copy of the GNU Lesser General Public\n * License along with this library; if not, write to the Free Software\n * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA\n *\n */\n\npackage pro.javacard.gp;\n\nimport java.io.BufferedReader;\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\nimport java.io.PrintStream;\nimport java.math.BigInteger;\nimport java.security.InvalidAlgorithmParameterException;\nimport java.security.InvalidKeyException;\nimport java.security.NoSuchAlgorithmException;\nimport java.security.SecureRandom;\nimport java.util.Arrays;\nimport java.util.EnumSet;\nimport java.util.List;\n\nimport javax.crypto.BadPaddingException;\nimport javax.crypto.Cipher;\nimport javax.crypto.IllegalBlockSizeException;\nimport javax.crypto.NoSuchPaddingException;\nimport javax.crypto.spec.IvParameterSpec;\nimport javax.smartcardio.CardChannel;\nimport javax.smartcardio.CardException;\nimport javax.smartcardio.CommandAPDU;\nimport javax.smartcardio.ResponseAPDU;\n\nimport org.bouncycastle.asn1.ASN1Encodable;\nimport org.bouncycastle.asn1.ASN1InputStream;\nimport org.bouncycastle.asn1.ASN1OctetString;\nimport org.bouncycastle.asn1.ASN1Primitive;\nimport org.bouncycastle.asn1.ASN1Sequence;\nimport org.bouncycastle.asn1.ASN1TaggedObject;\nimport org.bouncycastle.asn1.BERTags;\nimport org.bouncycastle.asn1.DERApplicationSpecific;\nimport org.bouncycastle.asn1.DEROctetString;\nimport org.bouncycastle.asn1.DERTaggedObject;\nimport org.bouncycastle.util.encoders.Hex;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\n\nimport apdu4j.HexUtils;\nimport apdu4j.ISO7816;\nimport com.google.common.collect.Lists;\nimport pro.javacard.gp.GPData.KeyType;\nimport pro.javacard.gp.GPKeySet.Diversification;\nimport pro.javacard.gp.GPKeySet.GPKey;\nimport pro.javacard.gp.GPKeySet.GPKey.Type;\nimport pro.javacard.gp.GPRegistryEntry.Kind;\nimport pro.javacard.gp.GPRegistryEntry.Privileges;\n\n/**\n * The main Global Platform class. Provides most of the Global Platform\n * functionality for managing GP compliant smart cards.\n */\npublic class GlobalPlatform {\n\t// Not static because of the overall statefulness of the class\n\t// Also allows to have the \"-v\" in the gp tool\n\tprivate static Logger logger = LoggerFactory.getLogger(GlobalPlatform.class);\n\n\tpublic static final short SHORT_0 = 0;\n\tpublic static final int SCP_ANY = 0;\n\tpublic static final int SCP_01_05 = 1;\n\tpublic static final int SCP_01_15 = 2;\n\tpublic static final int SCP_02_04 = 3;\n\tpublic static final int SCP_02_05 = 4;\n\tpublic static final int SCP_02_0A = 5;\n\tpublic static final int SCP_02_0B = 6;\n\tpublic static final int SCP_02_14 = 7;\n\tpublic static final int SCP_02_15 = 8;\n\tpublic static final int SCP_02_1A = 9;\n\tpublic static final int SCP_02_1B = 10;\n\n\tpublic enum APDUMode {\n\t\t// bit values as expected by EXTERNAL AUTHENTICATE\n\t\tCLR(0x00), MAC(0x01), ENC(0x02), RMAC(0x10);\n\n\t\tprivate final int value;\n\t\tprivate APDUMode(int value) {this.value = value;}\n\n\t\tpublic static int getSetValue(EnumSet<APDUMode> s) {\n\t\t\tint v = 0;\n\t\t\tfor (APDUMode m : s) {\n\t\t\t\tv |= m.value;\n\t\t\t}\n\t\t\treturn v;\n\t\t}\n\t};\n\n\tpublic static EnumSet<APDUMode> defaultMode = EnumSet.of(APDUMode.MAC);\n\n\t// Implementation details\n\tprivate static final byte CLA_GP = (byte) 0x80;\n\tprivate static final byte CLA_MAC = (byte) 0x84;\n\tprivate static final byte INS_INITIALIZE_UPDATE = (byte) 0x50;\n\tprivate static final byte INS_INSTALL = (byte) 0xE6;\n\tprivate static final byte INS_LOAD = (byte) 0xE8;\n\tprivate static final byte INS_DELETE = (byte) 0xE4;\n\tprivate static final byte INS_GET_STATUS = (byte) 0xF2;\n\tprivate static final byte INS_SET_STATUS = (byte) 0xF0;\n\tprivate static final byte INS_PUT_KEY = (byte) 0xD8;\n\tprivate static final byte INS_STORE_DATA = (byte) 0xE2;\n\tprivate static final byte INS_GET_DATA = (byte) 0xCA;\n\n\t// SD AID of the card successfully selected or null\n\tpublic AID sdAID = null;\n\tpublic static enum GPSpec {OP201, GP211, GP22};\n\tGPSpec spec = GPSpec.GP211;\n\n\t// Either 1 or 2 or 3\n\tprivate int scpMajorVersion = 0;\n\n\tprivate int blockSize = 255;\n\tprivate GPKeySet sessionKeys;\n\tprivate SCPWrapper wrapper = null;\n\tprivate CardChannel channel = null;\n\tprivate byte[] diversification_data = null;\n\n\tprivate byte[] cplc = null;\n\tprivate GPRegistry registry = null;\n\tprivate boolean dirty = true; // True if registry is dirty.\n\n\tprotected boolean strict = true;\n\n\n\t/**\n\t * Start a GlobalPlatform session to a card\n\t *\n\t * Maintaining locks to the underlying hardware is the duty of the caller\n\t *\n\t * @param channel channel to talk to\n\t * @throws IllegalArgumentException if {@code channel} is null.\n\t */\n\tpublic GlobalPlatform(CardChannel channel) {\n\t\tif (channel == null) {\n\t\t\tthrow new IllegalArgumentException(\"A card session is required\");\n\t\t}\n\t\tthis.channel = channel;\n\t}\n\n\tpublic CardChannel getChannel() {\n\t\treturn channel;\n\t}\n\t/**\n\t * Get the version and build information of the library.\n\t * @return\n\t */\n\tpublic static String getVersion() {\n\t\ttry (InputStream versionfile = GlobalPlatform.class.getResourceAsStream(\"version.txt\")) {\n\t\t\tString version = \"unknown-development\";\n\t\t\tif (versionfile != null) {\n\t\t\t\ttry (BufferedReader vinfo = new BufferedReader(new InputStreamReader(versionfile)) ) {\n\t\t\t\t\tversion = vinfo.readLine();\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn version;\n\t\t} catch (IOException e) {\n\t\t\treturn \"unknown-error\";\n\t\t}\n\t}\n\n\tpublic void setStrict(boolean strict) {\n\t\tthis.strict = strict;\n\t}\n\n\tpublic void setBlockSize(int size) {\n\t\tthis.blockSize = size;\n\t}\n\n\tpublic void setSpec(GPSpec spec) {\n\t\tthis.spec = spec;\n\t}\n\n\t@Deprecated\n\tpublic void imFeelingLucky() throws CardException, GPException {\n\t\tselect(null); // auto-detect ISD AID\n\t\tSessionKeyProvider keys = PlaintextKeys.fromMasterKey(GPData.defaultKey, Diversification.NONE);\n\t\topenSecureChannel(keys, null, 0, EnumSet.of(APDUMode.MAC));\n\t}\n\n\tprotected void giveStrictWarning(String message) throws GPException {\n\t\tmessage = \"STRICT WARNING: \"+ message;\n\t\tif (strict) {\n\t\t\tthrow new GPException(message);\n\t\t} else {\n\t\t\tlogger.warn(message);\n\t\t}\n\t}\n\n\tpublic boolean select(AID sdAID) throws GPException, CardException {\n\t\t// Try to select ISD without giving the sdAID\n\t\tfinal CommandAPDU command;\n\t\tif (sdAID == null ) {\n\t\t\tcommand = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, 256);\n\t\t} else {\n\t\t  // TODO: Use of Le gives error on Oberthur cards\n\t\t\tcommand = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, sdAID.getBytes());\n\t\t}\n\t\tResponseAPDU resp = channel.transmit(command);\n\n\t\t// Unfused JCOP replies with 0x6A82 to everything\n\t\tif (sdAID == null && resp.getSW() == 0x6A82) {\n\t\t\t// If it has the identification AID, it probably is an unfused JCOP\n\t\t\tbyte [] identify_aid = HexUtils.hex2bin(\"A000000167413000FF\");\n\t\t\tCommandAPDU identify = new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT, 0x04, 0x00, identify_aid, 256);\n\t\t\tResponseAPDU identify_resp = channel.transmit(identify);\n\t\t\tbyte[] identify_data = identify_resp.getData();\n\t\t\t// Check the fuse state\n\t\t\tif (identify_data.length > 15) {\n\t\t\t\tif (identify_data[14] == 0x00) {\n\t\t\t\t\tgiveStrictWarning(\"Unfused JCOP detected\");\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t// If the ISD is locked, log it.\n\t\tif (resp.getSW() == 0x6283) {\n\t\t\tlogger.warn(\"SELECT ISD returned 6283 - CARD_LOCKED\");\n\t\t}\n\n\t\tif (resp.getSW() == 0x9000 || resp.getSW() == 0x6283) {\n\t\t\t// The security domain AID is in FCI.\n\t\t\tbyte[] fci = resp.getData();\n\t\t\tparse_select_response(fci);\n\t\t\treturn true;\n\t\t}\n\t\treturn false;\n\t}\n\n\n\tprivate void parse_select_response(byte [] fci) throws GPException {\n\t\ttry (ASN1InputStream ais = new ASN1InputStream(fci)) {\n\t\t\tif (ais.available() > 0) {\n\t\t\t\t// Read FCI\n\t\t\t\tDERApplicationSpecific fcidata = (DERApplicationSpecific) ais.readObject();\n\t\t\t\t// FIXME System.out.println(ASN1Dump.dumpAsString(fcidata, true));\n\t\t\t\tif (fcidata.getApplicationTag() == 15) {\n\t\t\t\t\tASN1Sequence s = ASN1Sequence.getInstance(fcidata.getObject(BERTags.SEQUENCE));\n\t\t\t\t\tfor (ASN1Encodable e: Lists.newArrayList(s.iterator())) {\n\t\t\t\t\t\tASN1TaggedObject t = DERTaggedObject.getInstance(e);\n\t\t\t\t\t\tif (t.getTagNo() == 4) {\n\t\t\t\t\t\t\t// ISD AID\n\t\t\t\t\t\t\tASN1OctetString isdaid = DEROctetString.getInstance(t.getObject());\n\t\t\t\t\t\t\tAID detectedAID = new AID(isdaid.getOctets());\n\t\t\t\t\t\t\tif (sdAID == null) {\n\t\t\t\t\t\t\t\tlogger.debug(\"Auto-detected ISD AID: \" + detectedAID);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (sdAID != null && !detectedAID.equals(sdAID)) {\n\t\t\t\t\t\t\t\tgiveStrictWarning(\"SD AID in FCI does not match the requested AID!\");\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tthis.sdAID = sdAID == null ? detectedAID : sdAID;\n\t\t\t\t\t\t} else if (t.getTagNo() == 5) {\n\t\t\t\t\t\t\t// Proprietary, usually a sequence\n\t\t\t\t\t\t\tif (t.getObject() instanceof ASN1Sequence) {\n\t\t\t\t\t\t\t\tASN1Sequence prop = ASN1Sequence.getInstance(t.getObject());\n\t\t\t\t\t\t\t\tfor (ASN1Encodable enc: Lists.newArrayList(prop.iterator())) {\n\t\t\t\t\t\t\t\t\tASN1Primitive proptag = enc.toASN1Primitive();\n\t\t\t\t\t\t\t\t\tif (proptag instanceof DERApplicationSpecific) {\n\t\t\t\t\t\t\t\t\t\tDERApplicationSpecific isddata = (DERApplicationSpecific) proptag;\n\t\t\t\t\t\t\t\t\t\tif (isddata.getApplicationTag() == 19) {\n\t\t\t\t\t\t\t\t\t\t\tspec = GPData.get_version_from_card_data(isddata.getEncoded());\n\t\t\t\t\t\t\t\t\t\t\tlogger.debug(\"Auto-detected GP version: \" + spec);\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t} else if (proptag instanceof DERTaggedObject) {\n\t\t\t\t\t\t\t\t\t\tDERTaggedObject tag = (DERTaggedObject)proptag;\n\t\t\t\t\t\t\t\t\t\tif (tag.getTagNo() == 101) {\n\t\t\t\t\t\t\t\t\t\t\tsetBlockSize(DEROctetString.getInstance(tag.getObject()));\n\t\t\t\t\t\t\t\t\t\t} else if (tag.getTagNo() == 110) {\n\t\t\t\t\t\t\t\t\t\t\tlogger.debug(\"Lifecycle data (ignored): \" + HexUtils.bin2hex(tag.getObject().getEncoded()));\n\t\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\t\tlogger.info(\"Unknown/unhandled tag in FCI proprietary data: \" + HexUtils.bin2hex(tag.getEncoded()));\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\tthrow new GPException(\"Unknown data from card: \" + HexUtils.bin2hex(proptag.getEncoded()));\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t// Except Feitian cards which have a plain nested tag\n\t\t\t\t\t\t\t\tif (t.getObject() instanceof DERTaggedObject) {\n\t\t\t\t\t\t\t\t\tDERTaggedObject tag = (DERTaggedObject)t.getObject();\n\t\t\t\t\t\t\t\t\tif (tag.getTagNo() == 101) {\n\t\t\t\t\t\t\t\t\t\tsetBlockSize(DEROctetString.getInstance(tag.getObject()));\n\t\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\t\tlogger.info(\"Unknown/unhandled tag in FCI proprietary data: \" + HexUtils.bin2hex(tag.getEncoded()));\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tlogger.info(\"Unknown/unhandled tag in FCI: \" + HexUtils.bin2hex(t.getEncoded()));\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t} else {\n\t\t\t\t\tthrow new GPException(\"Unknown data from card: \" + HexUtils.bin2hex(fci));\n\t\t\t\t}\n\t\t\t}\n\t\t} catch (IOException | ClassCastException e) {\n\t\t\tthrow new GPException(\"Invalid data: \" + e.getMessage(), e);\n\t\t}\n\n\t}\n\n\tprivate void setBlockSize(ASN1OctetString blocksize) {\n\t\tint bs = new BigInteger(1, blocksize.getOctets()).intValue();\n\t\tif (bs > this.blockSize) {\n\t\t\tlogger.debug(\"Ignoring auto-detected block size that exceeds set maximum: \" + bs);\n\t\t} else {\n\t\t\tthis.blockSize = bs;\n\t\t\tlogger.debug(\"Auto-detected block size: \" + blockSize);\n\t\t}\n\t}\n\n  /**\n   * Establish a connection to the security domain specified in the constructor or discovered. This method is required before doing {@link #openSecureChannel\n   * openSecureChannel}.\n   *\n   * @throws GPException   if security domain selection fails for some reason\n   * @throws CardException on data transmission errors\n   */\n  @Deprecated\n  public void select() throws GPException, CardException {\n    if (!select(null)) {\n      throw new GPException(\"Could not select security domain!\");\n    }\n  }\n\n  private ResponseAPDU always_transmit(CommandAPDU cmd) throws CardException, GPException {\n    if (wrapper != null) {\n      return transmit(cmd);\n    } else {\n      return channel.transmit(cmd);\n    }\n  }\n\n  public List<GPKeySet.GPKey> getKeyInfoTemplate() throws CardException, GPException {\n    // FIXME: this assumes selected ISD. We always request the version with tags (GP CLA)\n    // Key Information Template\n    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xE0, 256);\n    ResponseAPDU resp = always_transmit(command);\n\n    if (resp.getSW() == ISO7816.SW_NO_ERROR) {\n      logger.warn(\"Key Information Template \" + Hex.toHexString(resp.getData()));\n      return GPData.get_key_template_list(resp.getData());\n    } else {\n      logger.warn(\"GET DATA(Key Information Template) not supported\");\n    }\n    return GPData.get_key_template_list(null);\n  }\n\n  public byte[] fetchCardData() throws CardException, GPException {\n    // Card data\n    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x66, 256);\n    ResponseAPDU resp = always_transmit(command);\n    logger.warn(\"response {}\", String.format(\"%04X\", resp.getSW()));\n    if (resp.getSW() == 0x6A86) {\n      logger.debug(\"GET DATA(CardData) not supported, Open Platform 2.0.1 card? \" + GPUtils.swToString(resp.getSW()));\n      return null;\n    } else if (resp.getSW() == 0x9000) {\n      return resp.getData();\n    }\n    return null;\n  }\n\n  public void dumpCardProperties(PrintStream out) throws CardException, GPException {\n\n    // Key Information Template\n    List<GPKey> key_templates = getKeyInfoTemplate();\n    if (key_templates != null && key_templates.size() > 0) {\n      GPData.pretty_print_key_template(key_templates, out);\n    }\n\n    out.println(\"***** GET DATA:\");\n\n    // Issuer Identification Number (IIN)\n    CommandAPDU command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x42, 256);\n    ResponseAPDU resp = channel.transmit(command);\n    if (resp.getSW() == 0x9000) {\n      out.println(\"IIN \" + HexUtils.bin2hex(resp.getData()));\n    } else {\n      out.println(\"GET DATA(IIN) not supported\");\n    }\n\n    // Card Image Number (CIN)\n    command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0x45, 256);\n    resp = channel.transmit(command);\n    if (resp.getSW() == 0x9000) {\n      out.println(\"CIN \" + HexUtils.bin2hex(resp.getData()));\n    } else {\n      out.println(\"GET DATA(CIN) not supported\");\n    }\n\n    // Sequence Counter of the default Key Version Number (tag 0xC1)\n    command = new CommandAPDU(CLA_GP, ISO7816.INS_GET_DATA, 0x00, 0xC1, 256);\n    resp = channel.transmit(command);\n    if (resp.getSW() == 0x9000) {\n      byte[] ssc = resp.getData();\n      out.println(\"SSC \" + HexUtils.bin2hex(TLVUtils.getTLVValueAsBytes(ssc, SHORT_0)));\n    } else {\n      out.println(\"GET DATA(SSC) not supported\");\n    }\n    out.println(\"*****\");\n  }\n\n\tpublic byte[] fetchCPLC() throws CardException, GPException {\n\t\tCommandAPDU command = new CommandAPDU(CLA_GP, INS_GET_DATA, 0x9F, 0x7F, 256);\n\t\tResponseAPDU resp = channel.transmit(command);\n\n\t\tif (resp.getSW() == ISO7816.SW_NO_ERROR) {\n\t\t\treturn resp.getData();\n\t\t} else {\n\t\t\tlogger.debug(\"GET DATA(CPLC) returned SW: \" + GPUtils.swToString(resp.getSW()));\n\t\t}\n\t\treturn null;\n\t}\n\n  public byte[] getCPLC() throws CardException, GPException {\n    if (cplc == null) {\n      cplc = fetchCPLC();\n    }\n    return cplc;\n  }\n\n  public byte[] getDiversificationData() {\n    return diversification_data;\n  }\n\n  /**\n   * Establishes a secure channel to the security domain.\n   */\n  public void openSecureChannel(SessionKeyProvider keys, byte[] host_challenge, int scpVersion, EnumSet<APDUMode> securityLevel)\n      throws CardException, GPException {\n\n    if (sdAID == null) {\n      throw new IllegalStateException(\"No selected ISD!\");\n    }\n\n    // ENC requires MAC\n    if (securityLevel.contains(APDUMode.ENC)) {\n      securityLevel.add(APDUMode.MAC);\n    }\n\n    // Generate host challenge\n    if (host_challenge == null) {\n      host_challenge = new byte[8];\n      SecureRandom sr = new SecureRandom();\n      sr.nextBytes(host_challenge);\n    }\n\n    // P1 key version (SCP1)\n    // P2 either key ID (SCP01) or 0 (SCP2)\n    // TODO: use it here for KeyID?\n    //CommandAPDU initUpdate = new CommandAPDU(CLA_GP, INS_INITIALIZE_UPDATE, keys.getKeysetVersion(), keys.getKeysetID(), host_challenge, 256);\n    CommandAPDU initUpdate = new CommandAPDU(CLA_GP, INS_INITIALIZE_UPDATE, keys.getKeysetVersion(), keys.getKeysetID(), host_challenge);\n\n    ResponseAPDU response = channel.transmit(initUpdate);\n    int sw = response.getSW();\n\n    // Detect and report locked cards in a more sensible way.\n    if ((sw == ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED) || (sw == ISO7816.SW_AUTHENTICATION_METHOD_BLOCKED)) {\n      throw new GPException(sw, \"INITIALIZE UPDATE failed, card LOCKED?\");\n    }\n\n    // Detect all other errors\n    GPException.check(response, \"INITIALIZE UPDATE failed\");\n    byte[] update_response = response.getData();\n\n    // Verify response length (SCP01/SCP02 + SCP03 + SCP03 w/ pseudorandom)\n    if (update_response.length != 28 && update_response.length != 29 && update_response.length != 32) {\n      throw new GPException(\"Invalid INITIALIZE UPDATE response length: \" + update_response.length);\n    }\n    // Parse the response\n    int offset = 0;\n    diversification_data = Arrays.copyOfRange(update_response, 0, 10);\n    offset += diversification_data.length;\n    // Get used key version from response\n    int keyVersion = update_response[offset] & 0xFF;\n    offset++;\n    // Get major SCP version from Key Information field in response\n    scpMajorVersion = update_response[offset];\n    offset++;\n\n    // get the protocol \"i\" parameter, if SCP03\n    int scp_i = -1;\n    if (scpMajorVersion == 3) {\n      scp_i = update_response[offset];\n      offset++;\n    }\n\n    // FIXME: SCP02 has 2 byte sequence + 6 bytes card challenge but the challenge is discarded.\n    // get card challenge\n    byte card_challenge[] = Arrays.copyOfRange(update_response, offset, offset + 8);\n    offset += card_challenge.length;\n    // get card cryptogram\n    byte card_cryptogram[] = Arrays.copyOfRange(update_response, offset, offset + 8);\n    offset += card_cryptogram.length;\n\n    logger.debug(\"Host challenge: \" + HexUtils.bin2hex(host_challenge));\n    logger.debug(\"Card challenge: \" + HexUtils.bin2hex(card_challenge));\n\n    // Verify response\n    // If using explicit key version, it must match.\n    if ((keys.getKeysetVersion() > 0) && (keyVersion != keys.getKeysetVersion())) {\n      throw new GPException(\"Key version mismatch: \" + keys.getKeysetVersion() + \" != \" + keyVersion);\n    }\n\n\t\tlogger.debug(\"Card reports SCP0\" + scpMajorVersion + \" with version \" + keyVersion + \" keys\");\n\n\t\t// Set default SCP version based on major version, if not explicitly known.\n\t\tif (scpVersion == SCP_ANY) {\n\t\t\tif (scpMajorVersion == 1) {\n\t\t\t\tscpVersion = SCP_01_05;\n\t\t\t} else if (scpMajorVersion == 2) {\n\t\t\t\tscpVersion = SCP_02_15;\n\t\t\t} else if (scpMajorVersion == 3) {\n\t\t\t\tlogger.debug(\"SCP03 i=\" + scp_i);\n\t\t\t\tscpVersion = 3; // FIXME: the symbolic numbering of versions needs to be fixed.\n\t\t\t}\n\t\t} else if (scpVersion != scpMajorVersion) {\n\t\t\tlogger.debug(\"Overriding SCP version: card reports \" + scpMajorVersion + \" but user requested \" + scpVersion);\n\t\t\tscpMajorVersion = scpVersion;\n\t\t\tif (scpVersion == 1) {\n\t\t\t\tscpVersion = SCP_01_05;\n\t\t\t} else if (scpVersion == 2) {\n\t\t\t\tscpVersion = SCP_02_15;\n\t\t\t} else {\n\t\t\t\tlogger.debug(\"error: \" + scpVersion);\n\t\t\t}\n\t\t}\n\n\t\t// Remove RMAC if SCP01 TODO: this should be generic sanitizer somewhere\n\t\tif (scpMajorVersion == 1 && securityLevel.contains(APDUMode.RMAC)) {\n\t\t\tlogger.debug(\"SCP01 does not support RMAC, removing.\");\n\t\t\tsecurityLevel.remove(APDUMode.RMAC);\n\t\t}\n\n\t\t// Derive session keys\n\t\tbyte [] seq = null;\n\t\tif (scpMajorVersion == 1) {\n\t\t\tsessionKeys = keys.getSessionKeys(scpMajorVersion, diversification_data, host_challenge, card_challenge);\n\t\t} else if (scpMajorVersion == 2) {\n\t\t\tseq = Arrays.copyOfRange(update_response, 12, 14);\n\t\t\tsessionKeys = keys.getSessionKeys(2, diversification_data, seq);\n\t\t} else if (scpMajorVersion == 3) {\n\t\t\tif (update_response.length == 32) {\n\t\t\t\tseq = Arrays.copyOfRange(update_response, 29, 32);\n\t\t\t}\n\t\t\tsessionKeys = keys.getSessionKeys(3, diversification_data, host_challenge, card_challenge);\n\t\t} else {\n\t\t\tthrow new GPException(\"Don't know how to handle SCP version \" + scpMajorVersion);\n\t\t}\n\n\t\t// Verify card cryptogram\n\t\tbyte[] my_card_cryptogram = null;\n\t\tbyte[] cntx = GPUtils.concatenate(host_challenge, card_challenge);\n\t\tif (scpMajorVersion == 1 || scpMajorVersion == 2) {\n\t\t\tmy_card_cryptogram = GPCrypto.mac_3des_nulliv(sessionKeys.getKey(KeyType.ENC), cntx);\n\t\t} else {\n\t\t\tmy_card_cryptogram = GPCrypto.scp03_kdf(sessionKeys.getKey(KeyType.MAC), (byte) 0x00, cntx, 64);\n\t\t}\n\n\t\t// This is the main check for possible successful authentication.\n\t\tif (!Arrays.equals(card_cryptogram, my_card_cryptogram)) {\n\t\t\tgiveStrictWarning(\"Card cryptogram invalid!\\nCard: \" + HexUtils.bin2hex(card_cryptogram) + \"\\nHost: \"+ HexUtils.bin2hex(my_card_cryptogram) + \"\\n!!! DO NOT RE-TRY THE SAME COMMAND/KEYS OR YOU MAY BRICK YOUR CARD !!!\");\n\t\t} else {\n\t\t\tlogger.debug(\"Verified card cryptogram: \" + HexUtils.bin2hex(my_card_cryptogram));\n\t\t}\n\n\t\t// Calculate host cryptogram and initialize SCP wrapper\n\t\tbyte[] host_cryptogram = null;\n\t\tif (scpMajorVersion == 1 || scpMajorVersion == 2) {\n\t\t\thost_cryptogram = GPCrypto.mac_3des_nulliv(sessionKeys.getKey(KeyType.ENC), GPUtils.concatenate(card_challenge, host_challenge));\n\t\t\twrapper = new SCP0102Wrapper(sessionKeys, scpVersion, EnumSet.of(APDUMode.MAC), null, null, blockSize);\n\t\t} else {\n\t\t\thost_cryptogram = GPCrypto.scp03_kdf(sessionKeys.getKey(KeyType.MAC), (byte) 0x01, cntx, 64);\n\t\t\twrapper = new SCP03Wrapper(sessionKeys, scpVersion, EnumSet.of(APDUMode.MAC), null, null, blockSize);\n\t\t}\n\n\t\tlogger.debug(\"Calculated host cryptogram: \" + HexUtils.bin2hex(host_cryptogram));\n\t\tint P1 = APDUMode.getSetValue(securityLevel);\n\t\tCommandAPDU externalAuthenticate = new CommandAPDU(CLA_MAC, ISO7816.INS_EXTERNAL_AUTHENTICATE_82, P1, 0, host_cryptogram);\n\t\tresponse = transmit(externalAuthenticate);\n\t\tGPException.check(response, \"External authenticate failed\");\n\t\twrapper.setSecurityLevel(securityLevel);\n\n\t\t// FIXME: ugly stuff, ugly...\n\t\tif (scpMajorVersion != 3) {\n\t\t\tSCP0102Wrapper w = (SCP0102Wrapper) wrapper;\n\t\t\tif (securityLevel.contains(APDUMode.RMAC)) {\n\t\t\t\tw.setRMACIV(w.getIV());\n\t\t\t}\n\t\t}\n\t}\n\n\tpublic ResponseAPDU transmit(CommandAPDU command) throws CardException, GPException {\n\t\tCommandAPDU wc = wrapper.wrap(command);\n\t\tResponseAPDU wr = channel.transmit(wc);\n\t\treturn wrapper.unwrap(wr);\n\t}\n\n\tpublic int getSCPVersion() {\n\t\treturn scpMajorVersion;\n\t}\n\n\tpublic void loadCapFile(CapFile cap) throws CardException, GPException{\n\t\tloadCapFile(cap, false, false, false, false);\n\t}\n\n\tprivate void loadCapFile(CapFile cap, boolean includeDebug, boolean separateComponents, boolean loadParam, boolean useHash)\n\t\t\tthrows GPException, CardException {\n\n\t\tif (getRegistry().allAIDs().contains(cap.getPackageAID())) {\n\t\t\tgiveStrictWarning(\"Package with AID \" + cap.getPackageAID() + \" is already present on card\");\n\t\t}\n\t\tbyte[] hash = useHash ? cap.getLoadFileDataHash(\"SHA1\", includeDebug) : new byte[0];\n\t\tint len = cap.getCodeLength(includeDebug);\n\t\t// FIXME: parameters are optional for load\n\t\tbyte[] loadParams = loadParam ? new byte[] { (byte) 0xEF, 0x04, (byte) 0xC6, 0x02, (byte) ((len & 0xFF00) >> 8),\n\t\t\t\t(byte) (len & 0xFF) } : new byte[0];\n\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\n\t\ttry {\n\t\t\tbo.write(cap.getPackageAID().getLength());\n\t\t\tbo.write(cap.getPackageAID().getBytes());\n\n\t\t\tbo.write(sdAID.getLength());\n\t\t\tbo.write(sdAID.getBytes());\n\n\t\t\tbo.write(hash.length);\n\t\t\tbo.write(hash);\n\n\t\t\tbo.write(loadParams.length);\n\t\t\tbo.write(loadParams);\n\t\t\tbo.write(0);\n\t\t} catch (IOException ioe) {\n\t\t\tthrow new RuntimeException(ioe);\n\t\t}\n\n\t\tCommandAPDU installForLoad = new CommandAPDU(CLA_GP, INS_INSTALL, 0x02, 0x00, bo.toByteArray());\n\t\tResponseAPDU response = transmit(installForLoad);\n\t\tGPException.check(response, \"Install for Load failed\");\n\n\t\tList<byte[]> blocks = cap.getLoadBlocks(includeDebug, separateComponents, wrapper.getBlockSize());\n\t\tfor (int i = 0; i < blocks.size(); i++) {\n\t\t\tCommandAPDU load = new CommandAPDU(CLA_GP, INS_LOAD, (i == (blocks.size() - 1)) ? 0x80 : 0x00, (byte) i, blocks.get(i));\n\t\t\tresponse = transmit(load);\n\t\t\tGPException.check(response, \"LOAD failed\");\n\t\t}\n\t\t// Mark the registry as dirty\n\t\tdirty = true;\n\t}\n\n  /**\n   * Install an applet and make it selectable. The package and applet AID must be present (ie. non-null). If one of the other parameters is null sensible\n   * defaults are chosen. If installation parameters are used, they must be passed in a special format, see parameter description below. <P> Before installation\n   * the package containing the applet must be loaded onto the card, see {@link #loadCapFile loadCapFile}. <P> This method installs just one applet. Call it\n   * several times for packages containing several applets.\n   *\n   * @param packageAID    the package that containing the applet\n   * @param appletAID     the applet to be installed\n   * @param instanceAID   the applet AID passed to the install method of the applet, defaults to {@code packageAID} if null\n   * @param privileges    privileges encoded as byte\n   * @param installParams tagged installation parameters, defaults to {@code 0xC9 00} (ie. no installation parameters) if null, if non-null the format is {@code\n   *                      0xC9 len data...}\n   */\n  @Deprecated\n  public void installAndMakeSelectable(AID packageAID, AID appletAID, AID instanceAID, byte privileges, byte[] installParams,\n                                       byte[] installToken) throws GPException, CardException {\n\n\t\tinstallAndMakeSelectable(packageAID, appletAID, instanceAID, Privileges.fromByte(privileges), installParams, installToken);\n\t}\n\n\tpublic void installAndMakeSelectable(AID packageAID, AID appletAID, AID instanceAID, Privileges privileges, byte[] installParams, byte[] installToken) throws GPException, CardException {\n\n\t\tif (instanceAID == null) {\n\t\t\tinstanceAID = appletAID;\n\t\t}\n\t\tif (getRegistry().allAppletAIDs().contains(instanceAID)) {\n\t\t\tgiveStrictWarning(\"Instance AID \" + instanceAID + \" is already present on card\");\n\t\t}\n\t\tif (installParams == null) {\n\t\t\tinstallParams = new byte[] { (byte) 0xC9, 0x00 };\n\t\t}\n\t\tif (installToken == null) {\n\t\t\tinstallToken = new byte[0];\n\t\t}\n\t\tbyte [] privs = privileges.toBytes();\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\ttry {\n\t\t\tbo.write(packageAID.getLength());\n\t\t\tbo.write(packageAID.getBytes());\n\n\t\t\tbo.write(appletAID.getLength());\n\t\t\tbo.write(appletAID.getBytes());\n\n\t\t\tbo.write(instanceAID.getLength());\n\t\t\tbo.write(instanceAID.getBytes());\n\n\t\t\tbo.write(privs.length);\n\t\t\tbo.write(privs);\n\n\t\t\tbo.write(installParams.length);\n\t\t\tbo.write(installParams);\n\n\t\t\tbo.write(installToken.length);\n\t\t\tbo.write(installToken);\n\t\t} catch (IOException ioe) {\n\t\t\tthrow new RuntimeException(ioe);\n\t\t}\n\n\t\tCommandAPDU install = new CommandAPDU(CLA_GP, INS_INSTALL, 0x0C, 0x00, bo.toByteArray());\n\t\tResponseAPDU response = transmit(install);\n\t\tGPException.check(response, \"Install for Install and make selectable failed\");\n\t\tdirty = true;\n\t}\n\n\n\t/**\n\t * Sends STORE DATA commands to the application identified\n\t *\n\t * @param aid - AID of the target application (or Security Domain)\n\t *\n\t * @throws GPException\n\t * @throws CardException\n\t *\n\t * @see GP 2.1.1 9.5.2\n\t *\n\t */\n\tpublic void storeData(AID aid, byte []data) throws CardException, GPException {\n\t\t// send the INSTALL for personalization command\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\ttry {\n\t\t\t// GP 2.1.1 9.5.2.3.5\n\t\t\tbo.write(0);\n\t\t\tbo.write(0);\n\t\t\tbo.write(aid.getLength());\n\t\t\tbo.write(aid.getBytes());\n\t\t\tbo.write(0);\n\t\t\tbo.write(0);\n\t\t\tbo.write(0);\n\t\t}\n\t\tcatch (IOException ioe) {\n\t\t\tthrow new RuntimeException(ioe);\n\t\t}\n\t\tCommandAPDU install = new CommandAPDU(CLA_GP, INS_INSTALL, 0x20, 0x00, bo.toByteArray());\n\t\tResponseAPDU response = transmit(install);\n\t\tGPException.check(response, \"Install for personalization failed\");\n\n\t\t// Now pump the data\n\t\tList<byte[]> blocks = GPUtils.splitArray(data, wrapper.getBlockSize());\n\t\tfor (int i = 0; i < blocks.size(); i++) {\n\t\t\tCommandAPDU load = new CommandAPDU(CLA_GP, INS_STORE_DATA, (i == (blocks.size() - 1)) ? 0x80 : 0x00, (byte) i, blocks.get(i));\n\t\t\tresponse = transmit(load);\n\t\t\tGPException.check(response, \"STORE DATA failed\");\n\t\t}\n\t}\n\n\tpublic void makeDefaultSelected(AID aid) throws CardException, GPException {\n\t\t// FIXME: only works for some 2.1.1 cards ?\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\t// Only supported privilege.\n\t\tbyte privileges = GPData.defaultSelectedPriv;\n\t\ttry {\n\t\t\tbo.write(0);\n\t\t\tbo.write(0);\n\t\t\tbo.write(aid.getLength());\n\t\t\tbo.write(aid.getBytes());\n\t\t\tbo.write(1);\n\t\t\tbo.write(privileges);\n\t\t\tbo.write(0);\n\t\t\tbo.write(0);\n\t\t} catch (IOException ioe) {\n\t\t\tthrow new RuntimeException(ioe);\n\t\t}\n\n\t\tCommandAPDU install = new CommandAPDU(CLA_GP, INS_INSTALL, 0x08, 0x00, bo.toByteArray());\n\t\tResponseAPDU response = transmit(install);\n\t\tGPException.check(response, \"Install for make selectable failed\");\n\t\tdirty = true;\n\t}\n\n\tpublic void lockUnlockApplet(AID app, boolean lock) throws CardException, GPException {\n\t\tCommandAPDU cmd = new CommandAPDU(CLA_GP, INS_SET_STATUS, 0x40, lock ? 0x80 : 0x00, app.getBytes());\n\t\tResponseAPDU response = transmit(cmd);\n\t\tGPException.check(response, \"SET STATUS failed\");\n\t\tdirty = true;\n\t}\n\n\tpublic void setCardStatus(byte status) throws CardException, GPException {\n\t\tCommandAPDU cmd = new CommandAPDU(CLA_GP, INS_SET_STATUS, 0x80, status);\n\t\tResponseAPDU response = transmit(cmd);\n\t\tGPException.check(response, \"SET STATUS failed\");\n\t\tdirty = true;\n\t}\n\n\t/**\n\t * Delete file {@code aid} on the card. Delete dependencies as well if\n\t * {@code deleteDeps} is true.\n\t *\n\t * @param aid\n\t *            identifier of the file to delete\n\t * @param deleteDeps\n\t *            if true delete dependencies as well\n\t * @throws CardException\n\t *             for low-level communication errors\n\t */\n\tpublic void deleteAID(AID aid, boolean deleteDeps) throws GPException, CardException {\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\ttry {\n\t\t\tbo.write(0x4f);\n\t\t\tbo.write(aid.getLength());\n\t\t\tbo.write(aid.getBytes());\n\t\t} catch (IOException ioe) {\n\t\t\tthrow new RuntimeException(ioe);\n\t\t}\n\t\tCommandAPDU delete = new CommandAPDU(CLA_GP, INS_DELETE, 0x00, deleteDeps ? 0x80 : 0x00, bo.toByteArray());\n\t\tResponseAPDU response = transmit(delete);\n\t\tGPException.check(response, \"Deletion failed\");\n\t\tdirty = true;\n\t}\n\n  // FIXME: remove the withCheck parameter, as always true?\n  private byte[] encodeKey(GPKey key, GPKey kek, boolean withCheck) {\n    try {\n      ByteArrayOutputStream baos = new ByteArrayOutputStream();\n      if (key.getType() == Type.DES) {\n        baos.write(0x80); // DES\n        // Length\n        baos.write(16);\n        // Encrypt key with KEK\n        Cipher cipher;\n        cipher = Cipher.getInstance(\"DES/ECB/NoPadding\");\n        cipher.init(Cipher.ENCRYPT_MODE, kek.getKey());\n        baos.write(cipher.doFinal(key.getValue(), 0, 16));\n        if (withCheck) {\n          byte[] kcv = GPCrypto.kcv_3des(key);\n          baos.write(kcv.length);\n          baos.write(kcv);\n        } else {\n          baos.write(0);\n        }\n      } else if (key.getType() == Type.DES3) {\n          baos.write(0x82); // 3DES\n          // Length\n          baos.write(16);\n          // Encrypt key with KEK\n          Cipher cipher;\n          cipher = Cipher.getInstance(\"DESede/ECB/NoPadding\");\n          cipher.init(Cipher.ENCRYPT_MODE, kek.getKey());\n          baos.write(cipher.doFinal(key.getValue(), 0, 16));\n          if (withCheck) {\n            byte[] kcv = GPCrypto.kcv_3des(key);\n            baos.write(kcv.length);\n            baos.write(kcv);\n          } else {\n            baos.write(0);\n          }\n      } else if (key.getType() == Type.AES) {\n        //\tbaos.write(0xFF);\n        baos.write(0x88); // AES\n        baos.write(0x11); // 128b keys only currently\n        byte[] cgram = GPCrypto.scp03_encrypt_key(kek, key);\n        baos.write(cgram.length);\n        baos.write(cgram);\n        byte[] check = GPCrypto.scp03_key_check_value(key);\n        baos.write(check.length);\n        baos.write(check);\n      } else {\n        throw new RuntimeException(\"Don't know how to handle \" + key.getType());\n      }\n      return baos.toByteArray();\n    } catch (IOException e) {\n      throw new RuntimeException(e);\n    } catch (InvalidKeyException e) {\n      throw new RuntimeException(e);\n    } catch (IllegalBlockSizeException e) {\n      throw new RuntimeException(e);\n    } catch (BadPaddingException e) {\n      throw new RuntimeException(e);\n    } catch (NoSuchAlgorithmException e) {\n      throw new RuntimeException(e);\n    } catch (NoSuchPaddingException e) {\n      throw new RuntimeException(e);\n    }\n  }\n\n\n\tpublic void putKeys(List<GPKeySet.GPKey> keys, boolean replace) throws GPException, CardException {\n\t\tif (keys.size() < 1 || keys.size() > 3) {\n\t\t\tthrow new IllegalArgumentException(\"Can add 1 or up to 3 keys at a time\");\n\t\t}\n\n\t\t// Debug\n\t\tlogger.debug(\"Replace: \" + replace);\n\t\tfor (GPKey k: keys) {\n\t\t\tlogger.debug(\"PUT KEY:\" + k);\n\t\t}\n\n\t\t// Check for sanity.\n\t\tif (keys.size() > 1) {\n\t\t\tfor (int i = 1; i < keys.size(); i++) {\n\t\t\t\tif (keys.get(i-1).getID() != keys.get(i).getID() -1) {\n\t\t\t\t\tthrow new IllegalArgumentException(\"Key ID-s of multiple keys must be sequential!\");\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\n\t\t// Check consistency, if template is available.\n\t\tList<GPKey> tmpl = getKeyInfoTemplate();\n\n\t\tif (tmpl.size() > 0) {\n\t\t\tif ((tmpl.get(0).getVersion() < 1 || tmpl.get(0).getVersion() > 0x7F) && replace) {\n\t\t\t\tgiveStrictWarning(\"Trying to replace factory keys, when you need to add new ones? Is this a virgin card? (use --virgin)\");\n\t\t\t}\n\n\t\t\t// Check if key types and lengths are the same when replacing\n\t\t\tif (replace && (keys.get(0).getType() != tmpl.get(0).getType() || keys.get(0).getLength() != tmpl.get(0).getLength())) {\n\t\t\t\t// FIXME: SCE60 template has 3DES keys but uses AES.\n\t\t\t\tgiveStrictWarning(\"Can not replace keys of different type or size: \" + tmpl.get(0).getType() + \"->\" + keys.get(0).getType());\n\t\t\t}\n\n\t\t\t// Check for matching version numbers if replacing and vice versa\n\t\t\tif (!replace && (keys.get(0).getVersion() == tmpl.get(0).getVersion())) {\n\t\t\t\tthrow new IllegalArgumentException(\"Not adding keys and version matches existing?\");\n\t\t\t}\n\n      if (replace) {\n        for (GPKey key : keys) {\n          if (findKeyInTemplate(key, tmpl)) {\n            continue;\n          }\n          throw new IllegalArgumentException(\"Replacing keys and versions don't match existing?\");\n        }\n      }\n    } else {\n\t\t\tif (replace) {\n\t\t\t\tlogger.debug(\"No key template on card but trying to replace. Implying add\");\n\t\t\t\treplace = false;\n\t\t\t}\n\t\t}\n\n\t\t// Construct APDU\n\t\tint P1 = 0x00; // New key in single command unless replace\n\t\tif (replace) {\n\t\t\tP1 = keys.get(0).getVersion();\n\t\t}\n\t\tint P2 = keys.get(0).getID();\n\t\tif (keys.size() > 1) {\n\t\t\tP2 |= 0x80;\n\t\t}\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\ttry {\n\t\t\t// New key version\n\t\t\tbo.write(keys.get(0).getVersion());\n\t\t\t// Key data\n\t\t\tfor (GPKey k: keys) {\n\t\t\t\tbo.write(encodeKey(k, sessionKeys.getKey(KeyType.KEK), true));\n\t\t\t}\n\t\t} catch (IOException e) {\n\t\t\tthrow new RuntimeException(e);\n\t\t}\n\n\t\tCommandAPDU command = new CommandAPDU(CLA_GP, INS_PUT_KEY, P1, P2, bo.toByteArray());\n\t\tResponseAPDU response = transmit(command);\n\t\tGPException.check(response,\"PUT KEY failed\");\n    GPData.pretty_print_putkey_response(response.getData(), System.out);\n\t}\n\n  private boolean findKeyInTemplate(final GPKey key, List<GPKey> template) {\n    for (GPKey templateKey : template) {\n      if (key.getVersion() == templateKey.getVersion() && key.getLength() == templateKey.getLength() && key.getType() == templateKey.getType()) {\n        return true;\n      }\n    }\n    return false;\n  }\n\n\tpublic GPRegistry getRegistry() throws GPException, CardException{\n\t\tif (dirty) {\n\t\t\tregistry = getStatus();\n\t\t\tdirty = false;\n\t\t}\n\t\treturn registry;\n\t}\n\n\n\t// TODO: The way registry parsing mode is piggybacked to the registry class is not really nice.\n\tprivate byte[] getConcatenatedStatus(GPRegistry reg, int p1, byte[] data) throws CardException, GPException {\n\t\t// By default use tags\n\t\tint p2 = reg.tags? 0x02 : 0x00;\n\n\t\tCommandAPDU cmd = new CommandAPDU(CLA_GP, INS_GET_STATUS, p1, p2, data, 256);\n\t\tResponseAPDU response = transmit(cmd);\n\n\t\t// Workaround for legacy cards, like SCE 6.0 FIXME: this does not work properly\n\t\t// Find a different way to adjust the response parser without touching the overall spec mode\n\n\t\t// If ISD-s are asked and none is returned, it could be either\n\t\t// - SSD\n\t\t// - no support for tags\n\t\tif (p1 == 0x80 && response.getSW() == 0x6A86) {\n\t\t\tif (p2 == 0x02) {\n\t\t\t\t// If no support for tags. Re-issue command without requesting tags\n\t\t\t\treg.tags = false;\n\t\t\t\treturn getConcatenatedStatus(reg, p1, data);\n\t\t\t}\n\t\t}\n\n\t\tint sw = response.getSW();\n\t\tif ((sw != ISO7816.SW_NO_ERROR) && (sw != 0x6310)) {\n\t\t\t// Possible values:\n\t\t\tif (sw == 0x6A88) {\n\t\t\t\t// No data to report\n\t\t\t\treturn response.getData();\n\n\t\t\t}\n\t\t\t// 0x6A86 - no tags support or ISD asked from SSD\n\t\t\t// 0a6A81 - Same as 6A88 ?\n\t\t\tlogger.warn(\"GET STATUS failed for \" + HexUtils.bin2hex(cmd.getBytes()) + \" with \" + Integer.toHexString(sw));\n\t\t\treturn response.getData();\n\t\t}\n\n\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\ttry {\n\t\t\tbo.write(response.getData());\n\n\t\t\twhile (response.getSW() == 0x6310) {\n\t\t\t\tcmd = new CommandAPDU(CLA_GP, INS_GET_STATUS, p1, p2 | 0x01, data, 256);\n\t\t\t\tresponse = transmit(cmd);\n\n\t\t\t\tsw = response.getSW();\n\t\t\t\tif ((sw != ISO7816.SW_NO_ERROR) && (sw != 0x6310)) {\n\t\t\t\t\tthrow new GPException(sw, \"GET STATUS failed for \" + HexUtils.bin2hex(cmd.getBytes()));\n\t\t\t\t}\n\t\t\t\tbo.write(response.getData());\n\t\t\t}\n\t\t} catch (IOException e) {\n\t\t\tthrow new RuntimeException(e);\n\t\t}\n\t\treturn bo.toByteArray();\n\t}\n\n\n\tprivate GPRegistry getStatus() throws CardException, GPException {\n\t\tGPRegistry registry = new GPRegistry();\n\n\t\tif (spec == GPSpec.OP201) {\n\t\t\tregistry.tags = false;\n\t\t}\n\t\t// Issuer security domain\n\t\tbyte[] data = getConcatenatedStatus(registry, 0x80, new byte[] { 0x4F, 0x00 });\n\t\tregistry.parse(0x80, data, Kind.IssuerSecurityDomain, spec);\n\n\t\t// Apps and security domains\n\t\tdata = getConcatenatedStatus(registry, 0x40, new byte[] { 0x4F, 0x00 });\n\t\tregistry.parse(0x40, data, Kind.Application, spec);\n\n\t\t// Load files\n\t\tdata = getConcatenatedStatus(registry, 0x20, new byte[] { 0x4F, 0x00 });\n\t\tregistry.parse(0x20, data, Kind.ExecutableLoadFile, spec);\n\n\t\tif (spec != GPSpec.OP201) { // TODO: remove\n\t\t\t// Load files with modules\n\t\t\tdata = getConcatenatedStatus(registry, 0x10, new byte[] { 0x4F, 0x00 });\n\t\t\tregistry.parse(0x10, data, Kind.ExecutableLoadFile, spec);\n\t\t}\n\t\treturn registry;\n\t}\n\n\tpublic static class SCP0102Wrapper extends SCPWrapper {\n\n\t\tprivate byte[] icv = null;\n\t\tprivate byte[] ricv = null;\n\t\tprivate int scp = 0;\n\n\t\tprivate final ByteArrayOutputStream rMac = new ByteArrayOutputStream();\n\n\t\tprivate boolean icvEnc = false;\n\n\t\tprivate boolean preAPDU = false;\n\t\tprivate boolean postAPDU = false;\n\n\n\n\t\tprivate SCP0102Wrapper(GPKeySet sessionKeys, int scp, EnumSet<APDUMode> securityLevel, byte[] icv, byte[] ricv, int bs) {\n\t\t\tthis.blockSize = bs;\n\t\t\tthis.sessionKeys = sessionKeys;\n\t\t\tthis.icv = icv;\n\t\t\tthis.ricv = ricv;\n\t\t\tsetSCPVersion(scp);\n\t\t\tsetSecurityLevel(securityLevel);\n\t\t}\n\n\t\tpublic void setSCPVersion(int scp) {\n\t\t\t// Major version of wrapper\n\t\t\tthis.scp = 2;\n\t\t\tif (scp < SCP_02_04) {\n\t\t\t\tthis.scp = 1;\n\t\t\t}\n\n\t\t\t// modes\n\t\t\tif ((scp == SCP_01_15) || (scp == SCP_02_14) || (scp == SCP_02_15) || (scp == SCP_02_1A) || (scp == SCP_02_1B)) {\n\t\t\t\ticvEnc = true;\n\t\t\t} else {\n\t\t\t\ticvEnc = false;\n\t\t\t}\n\t\t\tif ((scp == SCP_01_05) || (scp == SCP_01_15) || (scp == SCP_02_04) || (scp == SCP_02_05) || (scp == SCP_02_14) || (scp == SCP_02_15)) {\n\t\t\t\tpreAPDU = true;\n\t\t\t} else {\n\t\t\t\tpreAPDU = false;\n\t\t\t}\n\t\t\tif ((scp == SCP_02_0A) || (scp == SCP_02_0B) || (scp == SCP_02_1A) || (scp == SCP_02_1B)) {\n\t\t\t\tpostAPDU = true;\n\t\t\t} else {\n\t\t\t\tpostAPDU = false;\n\t\t\t}\n\t\t}\n\n\t\tpublic byte[] getIV() {\n\t\t\treturn icv;\n\t\t}\n\t\tpublic void setRMACIV(byte[] iv) {\n\t\t\tricv = iv;\n\t\t}\n\n\t\tprivate static byte clearBits(byte b, byte mask) {\n\t\t\treturn (byte) ((b & ~mask) & 0xFF);\n\t\t}\n\n\t\tprivate static byte setBits(byte b, byte mask) {\n\t\t\treturn (byte) ((b | mask) & 0xFF);\n\t\t}\n\n\t\tpublic CommandAPDU wrap(CommandAPDU command) throws GPException {\n\n\t\t\ttry {\n\t\t\t\tif (rmac) {\n\t\t\t\t\trMac.reset();\n\t\t\t\t\trMac.write(clearBits((byte) command.getCLA(), (byte) 0x07));\n\t\t\t\t\trMac.write(command.getINS());\n\t\t\t\t\trMac.write(command.getP1());\n\t\t\t\t\trMac.write(command.getP2());\n\t\t\t\t\tif (command.getNc() >= 0) {\n\t\t\t\t\t\trMac.write(command.getNc());\n\t\t\t\t\t\trMac.write(command.getData());\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif (!mac && !enc) {\n\t\t\t\t\treturn command;\n\t\t\t\t}\n\n\n\t\t\t\tint origCLA = command.getCLA();\n\t\t\t\tint newCLA = origCLA;\n\t\t\t\tint origINS = command.getINS();\n\t\t\t\tint origP1 = command.getP1();\n\t\t\t\tint origP2 = command.getP2();\n\t\t\t\tbyte[] origData = command.getData();\n\t\t\t\tint origLc = command.getNc();\n\t\t\t\tint newLc = origLc;\n\t\t\t\tbyte[] newData = null;\n\t\t\t\tint le = command.getNe();\n\t\t\t\tByteArrayOutputStream t = new ByteArrayOutputStream();\n\n\t\t\t\tif (origLc > getBlockSize()) {\n\t\t\t\t\tthrow new IllegalArgumentException(\"APDU too long for wrapping.\");\n\t\t\t\t}\n\n\t\t\t\tif (mac) {\n\t\t\t\t\tif (icv == null) {\n\t\t\t\t\t\ticv = new byte[8];\n\t\t\t\t\t} else if (icvEnc) {\n\t\t\t\t\t\tCipher c = null;\n\t\t\t\t\t\tif (scp == 1) {\n\t\t\t\t\t\t\tc = Cipher.getInstance(GPCrypto.DES3_ECB_CIPHER);\n\t\t\t\t\t\t\tc.init(Cipher.ENCRYPT_MODE, sessionKeys.getKeyFor(KeyType.MAC));\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tc = Cipher.getInstance(GPCrypto.DES_ECB_CIPHER);\n\t\t\t\t\t\t\tc.init(Cipher.ENCRYPT_MODE, sessionKeys.getKey(KeyType.MAC).getKey(Type.DES));\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// encrypts the future ICV ?\n\t\t\t\t\t\ticv = c.doFinal(icv);\n\t\t\t\t\t}\n\n\t\t\t\t\tif (preAPDU) {\n\t\t\t\t\t\tnewCLA = setBits((byte) newCLA, (byte) 0x04);\n\t\t\t\t\t\tnewLc = newLc + 8;\n\t\t\t\t\t}\n\t\t\t\t\tt.write(newCLA);\n\t\t\t\t\tt.write(origINS);\n\t\t\t\t\tt.write(origP1);\n\t\t\t\t\tt.write(origP2);\n\t\t\t\t\tt.write(newLc);\n\t\t\t\t\tt.write(origData);\n\n\t\t\t\t\tif (scp == 1) {\n\t\t\t\t\t\ticv = GPCrypto.mac_3des(sessionKeys.getKey(KeyType.MAC), t.toByteArray(), icv);\n\t\t\t\t\t} else if (scp == 2) {\n\t\t\t\t\t\ticv = GPCrypto.mac_des_3des(sessionKeys.getKey(KeyType.MAC), t.toByteArray(), icv);\n\t\t\t\t\t}\n\n\t\t\t\t\tif (postAPDU) {\n\t\t\t\t\t\tnewCLA = setBits((byte) newCLA, (byte) 0x04);\n\t\t\t\t\t\tnewLc = newLc + 8;\n\t\t\t\t\t}\n\t\t\t\t\tt.reset();\n\t\t\t\t\tnewData = origData;\n\t\t\t\t}\n\n\t\t\t\tif (enc && (origLc > 0)) {\n\t\t\t\t\tif (scp == 1) {\n\t\t\t\t\t\tt.write(origLc);\n\t\t\t\t\t\tt.write(origData);\n\t\t\t\t\t\tif ((t.size() % 8) != 0) {\n\t\t\t\t\t\t\tbyte[] x = GPCrypto.pad80(t.toByteArray(), 8);\n\t\t\t\t\t\t\tt.reset();\n\t\t\t\t\t\t\tt.write(x);\n\t\t\t\t\t\t}\n\t\t\t\t\t} else {\n\t\t\t\t\t\tt.write(GPCrypto.pad80(origData, 8));\n\t\t\t\t\t}\n\t\t\t\t\tnewLc += t.size() - origData.length;\n\n\t\t\t\t\tCipher c = Cipher.getInstance(GPCrypto.DES3_CBC_CIPHER);\n\t\t\t\t\tc.init(Cipher.ENCRYPT_MODE, sessionKeys.getKeyFor(KeyType.ENC), GPCrypto.iv_null_des);\n\t\t\t\t\tnewData = c.doFinal(t.toByteArray());\n\t\t\t\t\tt.reset();\n\t\t\t\t}\n\t\t\t\tt.write(newCLA);\n\t\t\t\tt.write(origINS);\n\t\t\t\tt.write(origP1);\n\t\t\t\tt.write(origP2);\n\t\t\t\tif (newLc > 0) {\n\t\t\t\t\tt.write(newLc);\n\t\t\t\t\tt.write(newData);\n\t\t\t\t}\n\t\t\t\tif (mac) {\n\t\t\t\t\tt.write(icv);\n\t\t\t\t}\n\t\t\t\tif (le > 0) {\n\t\t\t\t\tt.write(le);\n\t\t\t\t}\n\t\t\t\tCommandAPDU wrapped = new CommandAPDU(t.toByteArray());\n\t\t\t\treturn wrapped;\n\t\t\t} catch (IOException e) {\n\t\t\t\tthrow new RuntimeException(\"APDU wrapping failed\", e);\n\t\t\t} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {\n\t\t\t\tthrow new IllegalStateException(\"APDU wrapping failed\", e);\n\t\t\t} catch (InvalidKeyException | InvalidAlgorithmParameterException |IllegalBlockSizeException | BadPaddingException e) {\n\t\t\t\tthrow new GPException(\"APDU wrapping failed\", e);\n\t\t\t}\n\t\t}\n\n\t\tpublic ResponseAPDU unwrap(ResponseAPDU response) throws GPException {\n\t\t\tif (rmac) {\n\t\t\t\tif (response.getData().length < 8) {\n\t\t\t\t\tthrow new RuntimeException(\"Wrong response length (too short).\");\n\t\t\t\t}\n\t\t\t\tint respLen = response.getData().length - 8;\n\t\t\t\trMac.write(respLen);\n\t\t\t\trMac.write(response.getData(), 0, respLen);\n\t\t\t\trMac.write(response.getSW1());\n\t\t\t\trMac.write(response.getSW2());\n\n\t\t\t\tricv = GPCrypto.mac_des_3des(sessionKeys.getKey(KeyType.RMAC), GPCrypto.pad80(rMac.toByteArray(), 8), ricv);\n\n\t\t\t\tbyte[] actualMac = new byte[8];\n\t\t\t\tSystem.arraycopy(response.getData(), respLen, actualMac, 0, 8);\n\t\t\t\tif (!Arrays.equals(ricv, actualMac)) {\n\t\t\t\t\tthrow new GPException(\"RMAC invalid.\");\n\t\t\t\t}\n\t\t\t\tByteArrayOutputStream o = new ByteArrayOutputStream();\n\t\t\t\to.write(response.getBytes(), 0, respLen);\n\t\t\t\to.write(response.getSW1());\n\t\t\t\to.write(response.getSW2());\n\t\t\t\tresponse = new ResponseAPDU(o.toByteArray());\n\t\t\t}\n\t\t\treturn response;\n\t\t}\n\t}\n\n\tpublic static class SCP03Wrapper extends SCPWrapper {\n\t\t// Both are block size length\n\t\tbyte [] chaining_value = new byte[16];\n\t\tbyte [] encryption_counter = new byte[16];\n\n\t\tprivate SCP03Wrapper(GPKeySet sessionKeys, int scp, EnumSet<APDUMode> securityLevel, byte[] icv, byte[] ricv, int bs) {\n\t\t\tthis.sessionKeys = sessionKeys;\n\t\t\tthis.blockSize = bs;\n\t\t\t// initialize chaining value.\n\t\t\tSystem.arraycopy(GPCrypto.null_bytes_16, 0, chaining_value, 0, GPCrypto.null_bytes_16.length);\n\t\t\t// initialize encryption counter.\n\t\t\tSystem.arraycopy(GPCrypto.null_bytes_16, 0, encryption_counter, 0, GPCrypto.null_bytes_16.length);\n\n\t\t\tsetSecurityLevel(securityLevel);\n\t\t}\n\t\t@Override\n\t\tprotected CommandAPDU wrap(CommandAPDU command) throws GPException {\n\t\t\tbyte [] cmd_mac = null;\n\n\t\t\ttry {\n\t\t\t\tint cla = command.getCLA();\n\t\t\t\tint lc = command.getNc();\n\t\t\t\tbyte [] data = command.getData();\n\n\t\t\t\t// Encrypt if needed\n\t\t\t\tif (enc) {\n\t\t\t\t\tcla = 0x84;\n\t\t\t\t\t// Counter shall always be incremented\n\t\t\t\t\tGPCrypto.buffer_increment(encryption_counter);\n\t\t\t\t\tif (command.getData().length > 0) {\n\t\t\t\t\t\tbyte [] d = GPCrypto.pad80(command.getData(), 16);\n\t\t\t\t\t\t// Encrypt with S-ENC, after increasing the counter\n\t\t\t\t\t\tCipher c = Cipher.getInstance(GPCrypto.AES_CBC_CIPHER);\n\t\t\t\t\t\tc.init(Cipher.ENCRYPT_MODE, sessionKeys.getKeyFor(KeyType.ENC), GPCrypto.iv_null_aes);\n\t\t\t\t\t\tbyte [] iv = c.doFinal(encryption_counter);\n\t\t\t\t\t\t// Now encrypt the data with S-ENC.\n\t\t\t\t\t\tc.init(Cipher.ENCRYPT_MODE, sessionKeys.getKeyFor(KeyType.ENC), new IvParameterSpec(iv));\n\t\t\t\t\t\tdata = c.doFinal(d);\n\t\t\t\t\t\tlc = data.length;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\t// Calculate C-MAC\n\t\t\t\tif (mac) {\n\t\t\t\t\tcla = 0x84;\n\t\t\t\t\tlc = lc + 8;\n\n\t\t\t\t\tByteArrayOutputStream bo = new ByteArrayOutputStream();\n\t\t\t\t\tbo.write(chaining_value);\n\t\t\t\t\tbo.write(cla);\n\t\t\t\t\tbo.write(command.getINS());\n\t\t\t\t\tbo.write(command.getP1());\n\t\t\t\t\tbo.write(command.getP2());\n\t\t\t\t\tbo.write(lc);\n\t\t\t\t\tbo.write(data);\n\t\t\t\t\tbyte [] cmac_input = bo.toByteArray();\n\t\t\t\t\tbyte [] cmac = GPCrypto.scp03_mac(sessionKeys.getKey(KeyType.MAC), cmac_input, 128);\n\t\t\t\t\t// Set new chaining value\n\t\t\t\t\tSystem.arraycopy(cmac, 0, chaining_value, 0, chaining_value.length);\n\t\t\t\t\t// 8 bytes for actual mac\n\t\t\t\t\tcmd_mac = Arrays.copyOf(cmac, 8);\n\t\t\t\t}\n\t\t\t\t// Construct new command\n\t\t\t\tByteArrayOutputStream na = new ByteArrayOutputStream();\n\t\t\t\tna.write(cla); // possibly fiddled\n\t\t\t\tna.write(command.getINS());\n\t\t\t\tna.write(command.getP1());\n\t\t\t\tna.write(command.getP2());\n\t\t\t\tna.write(lc);\n\t\t\t\tna.write(data);\n\t\t\t\tif (mac)\n\t\t\t\t\tna.write(cmd_mac);\n\t\t\t\tbyte [] new_apdu = na.toByteArray();\n\t\t\t\treturn new CommandAPDU(new_apdu);\n\t\t\t}  catch (IOException e) {\n\t\t\t\tthrow new RuntimeException(\"APDU wrapping failed\", e);\n\t\t\t} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {\n\t\t\t\tthrow new IllegalStateException(\"APDU wrapping failed\", e);\n\t\t\t} catch (InvalidKeyException | InvalidAlgorithmParameterException |IllegalBlockSizeException | BadPaddingException e) {\n\t\t\t\tthrow new GPException(\"APDU wrapping failed\", e);\n\t\t\t}\n\t\t}\n\n\t\t@Override\n\t\tprotected ResponseAPDU unwrap(ResponseAPDU response) throws GPException {\n\t\t\treturn response;\n\t\t}\n\t}\n\n\tpublic static abstract class SCPWrapper {\n\t\tprotected int blockSize = 0;\n\t\tprotected GPKeySet sessionKeys = null;\n\t\tprotected boolean mac = false;\n\t\tprotected boolean enc = false;\n\t\tprotected boolean rmac = false;\n\n\t\tpublic void setSecurityLevel(EnumSet<APDUMode> securityLevel) {\n\t\t\tmac = securityLevel.contains(APDUMode.MAC);\n\t\t\tenc = securityLevel.contains(APDUMode.ENC);\n\t\t\trmac = securityLevel.contains(APDUMode.RMAC);\n\t\t}\n\n\t\tprotected int getBlockSize() {\n\t\t\tint res = this.blockSize;\n\t\t\tif (mac)\n\t\t\t\tres = res - 8;\n\t\t\tif (enc)\n\t\t\t\tres = res - 8;\n\t\t\treturn res;\n\t\t}\n\t\tprotected abstract CommandAPDU wrap(CommandAPDU command) throws GPException;\n\t\tprotected abstract ResponseAPDU unwrap(ResponseAPDU response) throws GPException;\n\t}\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/pro/javacard/gp/GlobalPlatform.java	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ src/pro/javacard/gp/GlobalPlatform.java	(revision )
+@@ -70,6 +70,7 @@
+ import pro.javacard.gp.GPKeySet.GPKey;
+ import pro.javacard.gp.GPKeySet.GPKey.Type;
+ import pro.javacard.gp.GPRegistryEntry.Kind;
++import pro.javacard.gp.GPRegistryEntry.Privilege;
+ import pro.javacard.gp.GPRegistryEntry.Privileges;
+ 
+ /**
+@@ -777,10 +778,12 @@
+ 	}
+ 
+ 	public void makeDefaultSelected(AID aid) throws CardException, GPException {
+-		// FIXME: only works for some 2.1.1 cards ?
++		// FIXME: only works for some 2.1.1 cards ? Clarify and document
+ 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
+ 		// Only supported privilege.
+-		byte privileges = GPData.defaultSelectedPriv;
++		Privileges ds = Privileges.set(Privilege.CardReset);
++		byte privileges = ds.toByte();
++
+ 		try {
+ 			bo.write(0);
+ 			bo.write(0);
+Index: globalplatform.pro
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>-injars build\n-injars lib/bcprov-jdk15on-155.jar(!META-INF/**)\n-injars lib/guava-19.0.jar(!META-INF/**)\n-dontwarn com.google.**\n-injars lib/jopt-simple-4.9.jar(!META-INF/**)\n-injars lib/slf4j-api-1.7.21.jar(!META-INF/**)\n-dontwarn org.slf4j.**\n# these are library because we package everything back in\n-libraryjars lib/slf4j-simple-1.7.21.jar\n-libraryjars lib/apdu4j-pcsc.jar\n-libraryjars  <java.home>/lib/rt.jar\n-libraryjars  <java.home>/lib/jce.jar\n-outjars optimized-globalplatform.jar\n-dontobfuscate\n-dontoptimize\n-keep public class pro.javacard.gp.GlobalPlatform {\n    public <methods>;\n}\n-keep public class pro.javacard.gp.** { public <methods>; public <fields>; }\n\n-keep public class pro.javacard.gp.GPTool {\n    public static void main(java.lang.String[]);\n}\n# For enum-s (why this is not default?)\n-keepclassmembers,allowoptimization enum * {\n    public static **[] values();\n    public static ** valueOf(java.lang.String);\n}\n-printseeds\n-dontnote\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>US-ASCII
+===================================================================
+--- globalplatform.pro	(revision 4c7fe992779e60e2d4b66e8e195e1edf940d0117)
++++ globalplatform.pro	(revision )
+@@ -1,4 +1,5 @@
+ -injars build
++<<<<<<< HEAD
+ -injars lib/bcprov-jdk15on-155.jar(!META-INF/**)
+ -injars lib/guava-19.0.jar(!META-INF/**)
+ -dontwarn com.google.**
+@@ -7,6 +8,16 @@
+ -dontwarn org.slf4j.**
+ # these are library because we package everything back in
+ -libraryjars lib/slf4j-simple-1.7.21.jar
++=======
++-injars lib/bcprov-jdk15on-157.jar(!META-INF/**)
++-injars lib/guava-22.0.jar(!META-INF/**)
++-dontwarn com.google.**
++-injars lib/jopt-simple-5.0.4.jar(!META-INF/**)
++-injars lib/slf4j-api-1.7.25.jar(!META-INF/**)
++-dontwarn org.slf4j.**
++# these are library because we package everything back in
++-libraryjars lib/slf4j-simple-1.7.25.jar
++>>>>>>> martinpaljak/master
+ -libraryjars lib/apdu4j-pcsc.jar
+ -libraryjars  <java.home>/lib/rt.jar
+ -libraryjars  <java.home>/lib/jce.jar

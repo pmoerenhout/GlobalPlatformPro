@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="apdu4j-pcsc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/apdu4j-pcsc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/bcprov-jdk15on-154.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guava-19.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jopt-simple-4.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/proguard-base-5.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.13.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-simple-1.7.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
