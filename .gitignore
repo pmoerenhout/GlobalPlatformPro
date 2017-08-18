@@ -7,3 +7,10 @@
 /javadoc
 /gp.exe
 /ext/launch4j
+
+# IntelliJ project files
+*.iml
+*.ipr
+*.iws
+.idea/
+dependency-reduced-pom.xml
